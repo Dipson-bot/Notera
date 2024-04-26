@@ -89,7 +89,7 @@ session_start();
                 $bookCoverTemp = $_FILES["bookcover"]["tmp_name"]; // Temporary file for book cover
                 $bookName = $_POST["bookname"]; // Add book name field
                 $authorName = $_POST["authorname"]; // Add author name field
-                $publishedDate = $_POST["pubdate"]; // Add published date field
+                $publishedDate = date('Y-m-d'); // Add published date field
                 $category_id = $_POST["category_id"]; // Corrected variable name to category_id
                 $subcat_id = $_POST['subcat_id'];
             
@@ -160,10 +160,10 @@ session_start();
             <input type="file" class="form-control" name="bookcover" accept="image/*" required>
             <input type="text" class="form-control" name="bookname" placeholder="Book Name" required>
             <input type="text" class="form-control" name="authorname" placeholder="Author Name" required>
-            <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required>
+            <!-- <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required> -->
             <!-- Add a dropdown for category selection -->
             <select class="form-control" name="category_id" id="category_id" required>
-                <option value="">Select Category</option>
+                <option value="">Select Semester</option>
                     <?php
                     // Retrieve category names and IDs from the database
                     $conn = mysqli_connect("localhost", "root", "", "pdfupload");
@@ -200,9 +200,9 @@ session_start();
                 <th>Book Cover</th>
                 <th>Book Name</th>
                 <th>Author Name</th>
-                <th>Published Date</th>
-                <th>Category</th>
-                <th>Subcategory</th>
+                <th>Uploaded Date</th>
+                <th>Semester</th>
+                <th>Subject</th>
                 <th>Action</th>
             </tr>
             <?php

@@ -183,8 +183,8 @@ if (!$result) {
                 <th>Book Cover</th>
                 <th>Book Name</th>
                 <th>Author Name</th>
-                <th>Published Date</th>
-                <th>Category</th>
+                <th>Uploaded Date</th>
+                <th>Semester</th>
                 <th>Subject</th> <!-- Add Subcategory column -->
                 <th>Action</th>
             </tr>

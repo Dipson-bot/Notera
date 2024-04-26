@@ -128,7 +128,7 @@ if (!$result) {
                 $bookCoverTemp = $_FILES["bookcover"]["tmp_name"];
                 $bookName = $_POST["bookname"];
                 $authorName = $_POST["authorname"];
-                $publishedDate = $_POST["pubdate"];
+                $publishedDate = date('Y-m-d');
                 $user_id = $_SESSION['id'];
                 $category_id = $_POST["category_id"]; // Corrected variable name to category_id
                 $subcat_id = $_POST['subcat_id'];
@@ -201,10 +201,10 @@ if (!$result) {
             <input type="file" class="form-control" name="bookcover" accept="image/*" required>
             <input type="text" class="form-control" name="bookname" placeholder="Book Name" required>
             <input type="text" class="form-control" name="authorname" placeholder="Author Name" required>
-            <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required>
+            <!-- <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required> -->
             <!-- Add a dropdown for category selection -->
             <select class="form-control" name="category_id" id="category_id" required>
-                <option value="">Select Category</option>
+                <option value="">Select Semester</option>
                     <?php
                     // Retrieve category names and IDs from the database
                     $conn = mysqli_connect("localhost", "root", "", "pdfupload");
@@ -225,8 +225,57 @@ if (!$result) {
                     SUBMIT
                 </button>
             </div>
-        </form><br>
+        </form><br> 
     </div>
+
+
+<!-- Copyright Notice Modal -->
+<div class="modal fade" id="copyrightModal" tabindex="-1" aria-labelledby="copyrightModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="text-center w-100"> <!-- Center-align content and make it full width -->
+                    <h2 class="modal-title" id="copyrightModalLabel">
+                        Copyright Notice
+                    </h2>
+                    <p>&copy; <?php echo date("Y"); ?> Notera. All rights reserved.</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- Center-align the Terms of Service heading -->
+                <h5 class="text-center">Terms of Service</h5>
+                <p>This agreement governs your use of our note management system. By using our platform, you agree to the following terms:</p><br>
+                <ul>
+                    <li>You retain ownership of the notes you upload to the platform.</li><br>
+                    <li>You grant us permission to host, display, and distribute your notes on our platform.</li><br>
+                    <li>You agree not to upload copyrighted material without proper authorization.</li><br>
+                    <li>We respect intellectual property rights and will respond to valid copyright infringement claims.</li><br>
+                </ul>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- <button type="button" class="btn btn-primary" id="uploadBtn">Proceed to Upload</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <!-- JavaScript code for copyright policy -->
+    <script>
+        $(document).ready(function () {
+            // Show copyright notice modal on page load
+            $('#copyrightModal').modal('show');
+
+            // Handle upload button click in the modal
+            $('#uploadBtn').click(function () {
+                $('#uploadForm').submit(); // Submit the form when the user clicks Proceed to Upload
+            });
+        });
+    </script>
+
+
 
       <!-- JavaScript code to populate subcategories based on selected category -->
       <script>
@@ -264,4 +313,3 @@ crossorigin="anonymous"></script>
 </body>
 
 </html>
-

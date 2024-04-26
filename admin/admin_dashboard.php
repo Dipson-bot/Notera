@@ -265,7 +265,7 @@ if (!$pdfUploadResult) {
                             <th scope="col">Book Cover</th>
                             <th scope="col">Book Name</th>
                             <th scope="col">Author Name</th>
-                            <th scope="col">Published Date</th>
+                            <th scope="col">Uploaded Date</th>
                             <th scope="col">Category</th>
                             <th scope="col">User Name</th>
                             <th scope="col">View PDF</th> 
