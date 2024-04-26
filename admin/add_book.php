@@ -82,8 +82,8 @@ session_start();
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_img']))
             {
                 $con = mysqli_connect("localhost","root","","pdfupload");
-                $filename = $_FILES["choosenote"]["name"];
-                $tempfile = $_FILES["choosenote"]["tmp_name"];
+                $filename = $_FILES["choosefile"]["name"];
+                $tempfile = $_FILES["choosefile"]["tmp_name"];
                 $folder = "pdf/".$filename;
                 $bookCover = $_FILES["bookcover"]["name"]; // Add book cover field
                 $bookCoverTemp = $_FILES["bookcover"]["tmp_name"]; // Temporary file for book cover
@@ -94,13 +94,14 @@ session_start();
                 $subcat_id = $_POST['subcat_id'];
             
                 // Check if the uploaded file has a PDF extension
-                $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-                if($fileExtension !== "pdf")
+                $fileExtension = !empty($filename) ? strtolower(pathinfo($filename, PATHINFO_EXTENSION)) : '';
+                if ($fileExtension !== "pdf")
                 {
                     echo "<div class='alert alert-danger' role='alert'>
                     <h4 class='text-center'>Only PDF files are allowed</h4>
                     </div>";
                 }
+
                 else
                 {
                     // Check if the uploaded file is an image

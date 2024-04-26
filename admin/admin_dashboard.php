@@ -11,7 +11,7 @@
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $database = "contacts";
+    $database = "contactus";
 
     $conn = mysqli_connect($servername, $username, $password, $database);
 
@@ -38,6 +38,8 @@ if (!$pdfUploadConn) {
 
 $pdfUploadQuery = "SELECT pb.*, c.cat_name as category_name FROM `pending_Books` pb 
 LEFT JOIN `category` c ON pb.cat_id = c.cat_id";
+
+
 
 
 $pdfUploadResult = mysqli_query($pdfUploadConn, $pdfUploadQuery);
@@ -275,7 +277,7 @@ if (!$pdfUploadResult) {
                         while ($fetch = mysqli_fetch_assoc($pdfUploadResult)) {
                            // Inside the loop fetching pending Books
                             $userId = $fetch['user_id'];
-                            $userQuery = "SELECT name FROM users WHERE id = '$userId'";
+                            $userQuery = "SELECT name FROM lms.users WHERE id = '$userId'";
                             $userResult = mysqli_query($pdfUploadConn, $userQuery);
                             $userName = mysqli_fetch_assoc($userResult)['name'];
                             // if ($userResult) {

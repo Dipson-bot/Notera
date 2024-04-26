@@ -23,7 +23,7 @@ if (!isset($_SESSION['id'])) {
     crossorigin="anonymous"></script>	
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container-fluid">
 
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -55,7 +55,10 @@ if (!isset($_SESSION['id'])) {
 						<li><a class="dropdown-item" href="add_cat.php">Add New Category</a></li>
 									<div class="dropdown-divider"></div>
 						<li?><a class="dropdown-item" href="manage_cat.php">Manage Category</a></li>
-									
+                                    <div class="dropdown-divider"></div>
+                        <li?><a class="dropdown-item" href="add_subcat.php">Add Sub Category</a></li>	
+                                    <div class="dropdown-divider"></div>		
+                        <li?><a class="dropdown-item" href="manage_subcat.php">Manage Sub Category</a></li>
 					</ul>
 				<li>
 
@@ -65,7 +68,7 @@ if (!isset($_SESSION['id'])) {
 				</ul>
 			</div>
 		</div>
-	</nav>
+	</nav><br>
 	
     <div class="container col-12 m-5">
         <div class="col-12 m-auto">

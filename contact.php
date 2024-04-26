@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $servername = "localhost";
         $username = "root";
         $password = "";
-        $database = "contacts";
+        $database = "contactus";
 
         // Create connection
         $conn = new mysqli($servername, $username, $password, $database);
@@ -80,18 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 ?>
 
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contact Us</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-</head>
-<body>
-    <!-- Your HTML form here -->
-</body>
-</html>
 
 <!doctype html>
 <html lang="en">
@@ -171,7 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $servername = "localhost";
         $username = "root";
         $password = "";
-        $database = "contacts";
+        $database = "contactus";
 
         // Create a connection 
         $conn = mysqli_connect($servername,$username,$password,$database);
@@ -212,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="container mt-3">
         <h1>Contact Us for your concerns</h1>
-        <form action ="/LMS/contact.php" method="post"> <!-- afaile afaima submit garaune i.e FORM.php ma submit -->
+        <form action ="/Notera/contact.php" method="post"> <!-- afaile afaima submit garaune i.e FORM.php ma submit -->
         <div class="mb-3">
             <label for="name" class="form-label">Name</label>
             <input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" value="<?php echo $_SESSION['name']; ?>" disabled>
