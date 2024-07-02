@@ -6,20 +6,38 @@ if (isset($_POST['reset_password'])) {
     $connection = mysqli_connect("localhost", "root", "");
     $db = mysqli_select_db($connection, "lms");
 
-    $newPassword = password_hash($_POST['new_password'], PASSWORD_BCRYPT);
+    $newPassword = $_POST['new_password'];
     $email = $_SESSION['reset_email'];
 
-    // Update the user's password in the database
-    $query = "UPDATE users SET password = '$newPassword' WHERE email = '$email'";
-    $query_run = mysqli_query($connection, $query);
-
-    if ($query_run) {
-        // Password reset successful, redirect to a success page
-        header("Location: reset_success.php");
-        exit();
+    // Validate new password length
+    if (strlen($newPassword) < 8) {
+        $_SESSION['reset_error'] = "Password must be at least 8 characters long.";
     } else {
-        // Password reset failed, handle accordingly
-        $_SESSION['reset_error'] = true;
+        $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+
+        // Retrieve the user's current password hash
+        $query = "SELECT password FROM users WHERE email = '$email'";
+        $query_run = mysqli_query($connection, $query);
+        $result = mysqli_fetch_assoc($query_run);
+        $currentPasswordHash = $result['password'];
+
+        // Check if the new password matches the current password
+        if (password_verify($newPassword, $currentPasswordHash)) {
+            $_SESSION['reset_error'] = "New password cannot be the same as the current password.";
+        } else {
+            // Update the user's password in the database
+            $query = "UPDATE users SET password = '$newPasswordHash' WHERE email = '$email'";
+            $query_run = mysqli_query($connection, $query);
+
+            if ($query_run) {
+                // Password reset successful, redirect to a success page
+                header("Location: reset_success.php");
+                exit();
+            } else {
+                // Password reset failed, handle accordingly
+                $_SESSION['reset_error'] = "Sorry, we could not reset your password. Please try again.";
+            }
+        }
     }
 }
 ?>
@@ -50,8 +68,8 @@ if (isset($_POST['reset_password'])) {
     <div class="col-md-8">
         <center><h3><u>Reset Password</u></h3></center>
         <?php
-        if (isset($_SESSION['reset_error']) && $_SESSION['reset_error']) {
-            echo '<div class="alert alert-danger" role="alert">Sorry, we could not reset your password. Please try again.</div>';
+        if (isset($_SESSION['reset_error'])) {
+            echo '<div class="alert alert-danger" role="alert">' . $_SESSION['reset_error'] . '</div>';
             unset($_SESSION['reset_error']);
         }
         ?>
