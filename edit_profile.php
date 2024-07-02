@@ -174,6 +174,3 @@ if (!$result) {
 </body>
 </html>
 
-//forking and pulling in github
-// pusing in github
-//hello raj
