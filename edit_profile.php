@@ -174,4 +174,3 @@ if (!$result) {
 </body>
 </html>
 
-//trying to merge rajProfile to Main
