@@ -79,7 +79,7 @@ if (isset($_GET['book_id']) && isset($_GET['pdf'])) {
 
 
 
-    // HandleNotera search
+    // HandlNotera search
 $search_query = "";
 if (isset($_POST['search_query'])) {
     $search_query = $_POST['search_query'];
@@ -133,7 +133,6 @@ if (isset($_POST['search_query'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
    
     
 
@@ -554,8 +553,3 @@ crossorigin="anonymous"></script>
 </body>
 
 </html>
-
-
-
-
-
