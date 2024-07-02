@@ -1,0 +1,19 @@
+-paila owner le euta project file github ma halne
+-tespaxi collaborate garna lai member add garne github ko website batai
+-team member le owner ko project fork/clone garne clone garyo vane duitai ko file ma changes auxa
+
+paila suru local file lai git sanga link garna (git directory banauna) lai owner le
+-> git init
+garnu parxa
+
+add/changes garna paryo vane
+-> git add .
+-> git status  		(not compulsory)
+-> git commit -m "Your message"
+-> git push
+
+arko member le garnu parne kam:
+git clone "https://github.com/Dipson-bot/Notera.git" 			(github bata code ko link tanne)
+
+changes aruko local repo ma dekhinu paryo vane tyo user le garnu parne kam:
+-> git  pull
