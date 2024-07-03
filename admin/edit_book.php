@@ -1,73 +1,147 @@
 <?php
-	session_start();
-	#fetch data from database
-	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
-	$book_name = "";
-	$book_no = "";
-	$author_id = "";
-	$cat_id = "";
-	$book_price = "";
-	$query = "select * from Books wherNotera_no = $_GET[bn]";
-	$query_run = mysqli_query($connection,$query);
-	while ($row = mysqli_fetch_assoc($query_run)){
-		$book_name = $row['book_name'];
-		$book_no = $row['book_no'];
-		$author_id = $row['author_id'];
-		$cat_id = $row['cat_id'];
-		$book_price = $row['book_price'];
-	}
+session_start();
+require('functions.php');
+
+// Check if the user is not logged in, redirect to index.php
+if (!isset($_SESSION['id'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "pdfupload");
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Check if book ID is provided via GET parameter
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    // Fetch book details from database based on ID
+    $sql = "SELECT * FROM images WHERE id = $id";
+    $result = mysqli_query($conn, $sql);
+    if (!$result) {
+        die("Query failed: " . mysqli_error($conn));
+    }
+    $book = mysqli_fetch_assoc($result);
+
+    // Process form submission for updating book details
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_edit'])) {
+        $bookName = $_POST['bookname'];
+        $authorName = $_POST['authorname'];
+        $category_id = $_POST['category_id'];
+        $subcat_id = $_POST['subcat_id'];
+
+        // Check if a new book cover file is uploaded
+        $bookCover = $_FILES["bookcover"]["name"];
+        $bookCoverTemp = $_FILES["bookcover"]["tmp_name"];
+
+        if (!empty($bookCover)) {
+            // Check if the uploaded file is an image
+            $imageInfo = getimagesize($bookCoverTemp);
+            if ($imageInfo === false) {
+                echo "<div class='alert alert-danger' role='alert'>
+                        <h4 class='text-center'>Invalid image format for book cover</h4>
+                      </div>";
+            } else {
+                // Move uploaded file to book_covers folder
+                $newBookCover = "book_covers/" . basename($bookCover);
+                move_uploaded_file($bookCoverTemp, $newBookCover);
+
+                // Update book details including book cover
+                $updateSql = "UPDATE images SET book_name = '$bookName', author_name = '$authorName', book_cover = '$bookCover', cat_id = '$category_id', subcat_id = '$subcat_id' WHERE id = $id";
+                if (mysqli_query($conn, $updateSql)) {
+                    echo "<div class='alert alert-success' role='alert'>
+                            <h4 class='text-center'>Book details updated successfully!</h4>
+                          </div>";
+                    // Optionally, redirect to another page after successful update
+                    // header("Location: list_books.php");
+                    // exit();
+                } else {
+                    echo "<div class='alert alert-danger' role='alert'>
+                            <h4 class='text-center'>Error updating book details: " . mysqli_error($conn) . "</h4>
+                          </div>";
+                }
+            }
+        } else {
+            // Update book details excluding book cover
+            $updateSql = "UPDATE images SET book_name = '$bookName', author_name = '$authorName', cat_id = '$category_id', subcat_id = '$subcat_id' WHERE id = $id";
+            if (mysqli_query($conn, $updateSql)) {
+                echo "<div class='alert alert-success' role='alert'>
+                        <h4 class='text-center'>Book details updated successfully!</h4>
+                      </div>";
+                // Optionally, redirect to another page after successful update
+                // header("Location: list_books.php");
+                // exit();
+            } else {
+                echo "<div class='alert alert-danger' role='alert'>
+                        <h4 class='text-center'>Error updating book details: " . mysqli_error($conn) . "</h4>
+                      </div>";
+            }
+        }
+    }
+} else {
+    echo "<div class='alert alert-danger' role='alert'>
+            <h4 class='text-center'>Book ID not provided.</h4>
+          </div>";
+    // Redirect or handle error as per your application flow
+    // header("Location: list_books.php");
+    // exit();
+}
 ?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Dashboard</title>
-	<meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
-	<link rel="stylesheet" type="text/css" href="../bootstrap-4.4.1/css/bootstrap.min.css">
-  	<script type="text/javascript" src="../bootstrap-4.4.1/js/juqery_latest.js"></script>
-  	<script type="text/javascript" src="../bootstrap-4.4.1/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Book</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<!-- Navbar -->
 <?php include 'admin_navbar.php'; ?>
-	<span><marquee>This is library mangement system. Library opens at 8:00 AM and close at 8:00 PM</marquee></span><br><br>
-		<center><h4>Edit Book</h4><br></center>
-		<div class="row">
-			<div class="col-md-4"></div>
-			<div class="col-md-4">
-				<form action="" method="post">
-					<div class="form-group">
-						<label for="mobile">Book Number:</label>
-						<input type="text" name="book_no" value="<?php echo $book_no;?>" class="form-control" disabled required>
-					</div>
-					<div class="form-group">
-						<label for="email">Book Name:</label>
-						<input type="text" name="book_name" value="<?php echo $book_name;?>" class="form-control" required>
-					</div>
-					<div class="form-group">
-						<label for="mobile">Author ID:</label>
-						<input type="text" name="author_id" value="<?php echo $author_id;?>" class="form-control" required>
-					</div>
-					<div class="form-group">
-						<label for="mobile">Category ID:</label>
-						<input type="text" name="cat_id" value="<?php echo $cat_id;?>" class="form-control" required>
-					</div>
-					<div class="form-group">
-						<label for="mobile">Book Price:</label>
-						<input type="text" name="book_price" value="<?php echo $book_price;?>" class="form-control" required>
-					</div>
-					<button type="submit" name="update" class="btn btn-primary">UpdatNotera</button>
-				</form>
-			</div>
-			<div class="col-md-4"></div>
-		</div>
+
+<div class="container col-6 mt-5">
+    <h1 class="text-center">Edit Book</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        <input type="text" class="form-control mb-3" name="bookname" placeholder="Book Name" value="<?php echo $book['book_name']; ?>" required>
+        <input type="text" class="form-control mb-3" name="authorname" placeholder="Author Name" value="<?php echo $book['author_name']; ?>" required>
+        <!-- Add input for book cover -->
+        <input type="file" class="form-control mb-3" name="bookcover" accept="image/*">
+        <!-- Add a dropdown for category selection -->
+        <select class="form-control mb-3" name="category_id" required>
+            <option value="">Select Category</option>
+            <?php
+            // Retrieve category names and IDs from the database
+            $sql = "SELECT cat_id, cat_name FROM category";
+            $result = mysqli_query($conn, $sql);
+            while ($row = mysqli_fetch_assoc($result)) {
+                $selected = ($row['cat_id'] == $book['cat_id']) ? "selected" : "";
+                echo "<option value='" . $row['cat_id'] . "' $selected>" . $row['cat_name'] . "</option>";
+            }
+            ?>
+        </select>
+        <!-- Add a dropdown for subcategory selection -->
+        <select class="form-control mb-3" name="subcat_id" required>
+            <option value="">Select Subcategory</option>
+            <?php
+            // Retrieve subcategory names and IDs from the database based on selected category
+            $selectedCatId = $book['cat_id'];
+            $sqlSub = "SELECT subcat_id, subcat_name FROM subcategory WHERE cat_id = $selectedCatId";
+            $resultSub = mysqli_query($conn, $sqlSub);
+            while ($rowSub = mysqli_fetch_assoc($resultSub)) {
+                $selectedSub = ($rowSub['subcat_id'] == $book['subcat_id']) ? "selected" : "";
+                echo "<option value='" . $rowSub['subcat_id'] . "' $selectedSub>" . $rowSub['subcat_name'] . "</option>";
+            }
+            ?>
+        </select>
+        <button type="submit" name="btn_edit" class="btn btn-primary">Update Book</button>
+    </form>
+</div>
+
+<!-- Include Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-<?php
-	if(isset($_POST['update'])){
-		$connection = mysqli_connect("localhost","root","");
-		$db = mysqli_select_db($connection,"lms");
-		$query = "updatNotera set book_name = '$_POST[book_name]',author_id = $_POST[author_id],cat_id = $_POST[cat_id],book_price = $_POST[book_price] wherNotera_no = $_GET[bn]";
-		$query_run = mysqli_query($connection,$query);
-		header("location:manage_book.php");
-	}
-?>
