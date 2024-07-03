@@ -19,30 +19,8 @@
   	<script type="text/javascript" src="../bootstrap-4.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="admin_dashboard.php">Library Management System (LMS)</a>
-			</div>
-			<font style="color: white"><span><strong>Welcome: <?php echo $_SESSION['name'];?></strong></span></font>
-			<font style="color: white"><span><strong>Email: <?php echo $_SESSION['email'];?></strong></font>
-		    <ul class="nav navbar-nav navbar-right">
-		      <li class="nav-item dropdown">
-	        	<a class="nav-link dropdown-toggle" data-toggle="dropdown">My Profile </a>
-	        	<div class="dropdown-menu">
-	        		<a class="dropdown-item" href="#">View Profile</a>
-	        		<div class="dropdown-divider"></div>
-	        		<a class="dropdown-item" href="#">Edit Profile</a>
-	        		<div class="dropdown-divider"></div>
-	        		<a class="dropdown-item" href="change_password.php">Change Password</a>
-	        	</div>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link" href="../logout.php">Logout</a>
-		      </li>
-		    </ul>
-		</div>
-	</nav><br>
+<?php include 'admin_navbar.php'; ?>
+
 	<span><marquee>This is library mangement system. Library opens at 8:00 AM and close at 8:00 PM</marquee></span><br><br>
 		<center><h4>Not Returned Book's Detail</h4><br></center>
 		<div class="row">

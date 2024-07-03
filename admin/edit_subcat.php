@@ -60,20 +60,7 @@ if (isset($_GET['sid'])) {
             crossorigin="anonymous"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <a class="navbar-brand" href="admin_dashboard.php">Notera</a>
-                <li class="nav-item">
-                    <a class="nav-link active" href="../user_dashboard.php">User View</a>
-                </li>
-                <!-- Other navigation items -->
-            </ul>
-        </div>
-    </div>
-</nav><br>
+<?php include 'admin_navbar.php'; ?>
 
 <center><h4>Edit Subcategory</h4><br></center>
 <div class="row">

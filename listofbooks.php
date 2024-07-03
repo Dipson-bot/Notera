@@ -80,7 +80,11 @@ if (!$result) {
 <body>
 <?php include 'navbar.php'; ?>
 
+<<<<<<< HEAD
 <div class="container col-12 m-5">
+=======
+        <div class="container col-12 m-5">
+>>>>>>> f41686a84eb411c07062c27ea52d4accd53e3a1e
     <div class="col-12 m-auto">
         <h2 class="text-center">List of Books</h2>
         <table class="table text-center">

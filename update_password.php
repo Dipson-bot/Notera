@@ -76,49 +76,7 @@ if (isset($_POST['update'])) {
           integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark" data-bs-theme="dark">
-    <div class="container-fluid">
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                <a class="navbar-brand" href="user_dashboard.php">Notera</a>
-                <li class="nav-item">
-                    <a class="nav-link active" href="listofBooks.php">List of Books</a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link active" href="contact.php">Contact Us</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link active" href="aboutus.php">About Us</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" role="button" data-bs-toggle="dropdown">My Profile
-                    </a>
-                    <ul class="dropdown-menu">
-                        <a class="dropdown-item" href="view_profile.php">View Profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="change_password.php">Change Password</a>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" role="button" href="logout.php">Logout</a>
-                </li>
-            </ul>
-
-            <!-- search bar -->
-            <form class="d-flex" action="search.php" method="post">
-                <input class="form-control me-2" type="search" placeholder="Search by Book Name" aria-label="Search"
-                       name="book_name">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-
-        </div>
-    </div>
-</nav>
+<?php include 'navbar.php'; ?>
 
 <div class="container mt-4">
     <div class="row justify-content-center">
