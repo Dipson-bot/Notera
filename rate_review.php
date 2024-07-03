@@ -141,13 +141,13 @@ if (!$review_result) {
                 $empty_stars = 5 - $full_stars - $half_star;
 
                 for ($i = 0; $i < $full_stars; $i++) {
-                    echo "<span>&#x2605;</span>";
+                    echo "<span class='text-warning'>&#9733;</span>"; // Filled star
                 }
                 if ($half_star) {
-                    echo "<span>&#x00BD;</span>";
+                    echo "<span class='text-warning'>&#189;</span>"; // Half star
                 }
                 for ($i = 0; $i < $empty_stars; $i++) {
-                    echo "<span>&#x2606;</span>";
+                    echo "<span class='text-secondary'>&#9733;</span>"; // Empty star
                 }
                 ?>
             </div>
