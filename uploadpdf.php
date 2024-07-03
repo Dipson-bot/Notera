@@ -145,8 +145,12 @@ if (!$result) {
         <h2 class="text-center">Upload Books</h2>
         <form action="" method="post" class="form-control" enctype="multipart/form-data">
             <input type="file" class="form-control" name="choosefile" required>
-            <input type="file" class="form-control" name="bookcover" accept="image/*" required>
-            <input type="text" class="form-control" name="bookname" placeholder="Book Name" required>
+            <!-- Input for book cover -->
+        <label for="bookcover" class="form-label">Choose Image</label>
+        <input type="file" class="form-control mb-3" id="bookcover" name="bookcover" accept="image/*">
+        <!-- Input for PDF file -->
+        <label for="choosefile" class="form-label">Choose PDF</label>
+        <input type="file" class="form-control mb-3" id="choosefile" name="choosefile">
             <input type="text" class="form-control" name="authorname" placeholder="Author Name" required>
             <!-- <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required> -->
             <!-- Add a dropdown for category selection -->

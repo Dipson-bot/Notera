@@ -119,13 +119,20 @@ if (!$result) {
                         </div>
                     </td>
                     <td>
-                        <?php
+                        <!-- Display average rating as stars -->
+                        <div class="book-rating">
+                            <?php
                             if ($average_rating !== null) {
-                                printf("%.1f / 5", $average_rating);
+                                $average_rating = round($average_rating, 1);
+                                for ($i = 1; $i <= 5; $i++) {
+                                    echo ($i <= $average_rating) ? '★' : '☆';
+                                }
+                                echo " ($average_rating)";
                             } else {
                                 echo "No ratings yet";
                             }
-                        ?>
+                            ?>
+                        </div>
                     </td>
                 </tr>
                 <?php } ?>

@@ -17,6 +17,12 @@ if (!isset($_SESSION['id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .book-rating {
+            font-size: 16px;
+            color: #FFD700; /* Golden color for stars */
+        }
+    </style>
 </head>
 <body>
 <!-- Navbar -->
@@ -94,8 +100,12 @@ if (!isset($_SESSION['id'])) {
         }
         ?>
         <form action="" method="post" class="form-control" enctype="multipart/form-data">
-            <input type="file" class="form-control" name="choosefile" required>
-            <input type="file" class="form-control" name="bookcover" accept="image/*" required>
+                <!-- Input for book cover -->
+            <label for="bookcover" class="form-label">Choose Image</label>
+            <input type="file" class="form-control mb-3" id="bookcover" name="bookcover" accept="image/*">
+            <!-- Input for PDF file -->
+            <label for="choosefile" class="form-label">Choose PDF</label>
+            <input type="file" class="form-control mb-3" id="choosefile" name="choosefile">
             <input type="text" class="form-control" name="bookname" placeholder="Book Name" required>
             <input type="text" class="form-control" name="authorname" placeholder="Author Name" required>
             <!-- <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required> -->
@@ -131,87 +141,117 @@ if (!isset($_SESSION['id'])) {
     <div class="col-12 m-auto">
         <h2 class="text-center">List of Books</h2>
         <table class="table text-center">
-            <tr>
-                <!-- <th>ID</th> -->
-                <th>Book Cover</th>
-                <th>Book Name</th>
-                <th>Author Name</th>
-                <th>Uploaded Date</th>
-                <th>Semester</th>
-                <th>Subject</th>
-                <th>Action</th>
-            </tr>
-            <?php
-            $conn = mysqli_connect("localhost", "root", "", "pdfupload");
-
-            // Check if the search form is submitted
-            if (isset($_POST['btn_search'])) {
-                $searchQuery = $_POST['search_query'];
-
-                // Create an SQL query to filter Books based on the search query for book name or category
-                $sql2 = "SELECT i.id, i.pdf, i.book_cover, i.book_name, i.author_name, i.published_date, c.cat_name, s.subcat_name 
-                        FROM images i 
-                        INNER JOIN category c ON i.cat_id = c.cat_id 
-                        LEFT JOIN subcategory s ON i.subcat_id = s.subcat_id 
-                        WHERE i.book_name LIKE '%$searchQuery%' OR c.cat_name LIKE '%$searchQuery%' OR s.subcat_name LIKE '%$searchQuery%'";
-                $result2 = mysqli_query($conn, $sql2);
-
-                if (!$result2) {
-                    die("Query failed: " . mysqli_error($conn));
-                }
-            } else {
-                // Default query to display all Books
-                $sql2 = "SELECT i.id, i.pdf, i.book_cover, i.book_name, i.author_name, i.published_date, c.cat_name, s.subcat_name 
-                        FROM images i 
-                        INNER JOIN category c ON i.cat_id = c.cat_id 
-                        LEFT JOIN subcategory s ON i.subcat_id = s.subcat_id";
-                $result2 = mysqli_query($conn, $sql2);
-                if (!$result2) {
-                    die("Query failed: " . mysqli_error($conn));
-                }
-            }
-
-            while ($fetch = mysqli_fetch_assoc($result2)) {
-            ?>
+            <thead>
                 <tr>
-                    <td><img src="./book_covers/<?php echo $fetch['book_cover'] ?>" alt="Book Cover" style="max-width: 100px;"></td>
+                    <th>Book Cover</th>
+                    <th>Book Name</th>
+                    <th>Author Name</th>
+                    <th>Uploaded Date</th>
+                    <th>Semester</th>
+                    <th>Subject</th>
+                    <th>Action</th>
+                    <th>Average Rating</th> <!-- New column for Average Rating -->
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $conn = mysqli_connect("localhost", "root", "", "pdfupload");
+
+                // Check if the search form is submitted
+                if (isset($_POST['btn_search'])) {
+                    $searchQuery = $_POST['search_query'];
+
+                    // Create an SQL query to filter Books based on the search query for book name or category
+                    $sql2 = "SELECT i.id, i.pdf, i.book_cover, i.book_name, i.author_name, i.published_date, c.cat_name, s.subcat_name 
+                            FROM images i 
+                            INNER JOIN category c ON i.cat_id = c.cat_id 
+                            LEFT JOIN subcategory s ON i.subcat_id = s.subcat_id 
+                            WHERE i.book_name LIKE '%$searchQuery%' OR c.cat_name LIKE '%$searchQuery%' OR s.subcat_name LIKE '%$searchQuery%'";
+                    $result2 = mysqli_query($conn, $sql2);
+
+                    if (!$result2) {
+                        die("Query failed: " . mysqli_error($conn));
+                    }
+                } else {
+                    // Default query to display all Books
+                    $sql2 = "SELECT i.id, i.pdf, i.book_cover, i.book_name, i.author_name, i.published_date, c.cat_name, s.subcat_name 
+                            FROM images i 
+                            INNER JOIN category c ON i.cat_id = c.cat_id 
+                            LEFT JOIN subcategory s ON i.subcat_id = s.subcat_id";
+                    $result2 = mysqli_query($conn, $sql2);
+                    if (!$result2) {
+                        die("Query failed: " . mysqli_error($conn));
+                    }
+                }
+
+                while ($fetch = mysqli_fetch_assoc($result2)) {
+                    // Calculate average rating for the current book
+                    $book_id = $fetch['id'];
+                    $average_rating_sql = "SELECT AVG(rating) AS avg_rating FROM reviews WHERE book_id = $book_id";
+                    $average_rating_result = mysqli_query($conn, $average_rating_sql);
+                    $average_rating = mysqli_fetch_assoc($average_rating_result)['avg_rating'];
+                ?>
+                <tr>
+                    <td><img src="book_covers/<?php echo $fetch['book_cover'] ?>" alt="Book Cover" style="max-width: 100px;"></td>
                     <td><?php echo $fetch['book_name'] ?></td>
                     <td><?php echo $fetch['author_name'] ?></td>
                     <td><?php echo $fetch['published_date'] ?></td>
                     <td><?php echo $fetch['cat_name'] ?></td>
-                    <td><?php echo $fetch['subcat_name'] ?></td> <!-- Subcategory -->
+                    <td><?php echo $fetch['subcat_name'] ?></td>
                     <td>
-                        <a href="./pdf/<?php echo $fetch['pdf'] ?>" target="_blank" class="btn btn-outline-primary">View</a>
-                        <a href="edit_book.php?id=<?php echo $fetch['id']; ?>" class="btn btn-outline-info">Edit</a> <!-- Edit button -->
-                        <form action="delete.php" method="post">
-                            <input type="hidden" name="id" value="<?php echo $fetch['id'] ?>">
-                            <button type="submit" name="btn_delete" class="btn btn-outline-danger">Delete</button>
-                        </form>
+                        <a href="pdf/<?php echo $fetch['pdf'] ?>" target="_blank" class="btn btn-outline-primary">View</a>
+                        <a href="delete.php?id=<?php echo $fetch['id'] ?>" class="btn btn-outline-danger">Delete</a>
+                        <a href="edit_book.php?id=<?php echo $fetch['id'] ?>" class="btn btn-outline-secondary">Edit</a> <!-- Added Edit Button -->
+                    </td>
+                    <td>
+                        <!-- Display average rating as stars -->
+                        <div class="book-rating">
+                            <?php
+                            if ($average_rating !== null) {
+                                $average_rating = round($average_rating, 1);
+                                for ($i = 1; $i <= 5; $i++) {
+                                    echo ($i <= $average_rating) ? '★' : '☆';
+                                }
+                                echo " ($average_rating)";
+                            } else {
+                                echo "No ratings yet";
+                            }
+                            ?>
+                        </div>
                     </td>
                 </tr>
-            <?php
-            }
-            ?>
+                <?php } ?>
+            </tbody>
         </table>
     </div>
 </div>
 
-<!-- Include Bootstrap JavaScript -->
 <script>
-    $(document).ready(function() {
-        // Fetch subcategories based on selected category
-        $('#category_id').change(function() {
-            var categoryId = $(this).val();
-            $.ajax({
-                url: 'fetch_subcategories.php',
-                method: 'POST',
-                data: { category_id: categoryId },
-                success: function(data) {
-                    $('#subcategory_id').html(data);
-                }
-            });
+$(document).ready(function() {
+    // Function to fetch and populate subcategories based on selected category
+    function fetchSubcategories(categoryId) {
+        $.ajax({
+            url: 'fetch_subcategories.php',
+            type: 'POST',
+            data: { category_id: categoryId },
+            success: function(response) {
+                $('#subcategory_id').html(response);
+            }
         });
+    }
+
+    // Fetch subcategories when a category is selected
+    $('#category_id').change(function() {
+        var categoryId = $(this).val();
+        fetchSubcategories(categoryId);
     });
+
+    // Initial fetch for the selected category if it exists
+    var initialCategoryId = $('#category_id').val();
+    if (initialCategoryId) {
+        fetchSubcategories(initialCategoryId);
+    }
+});
 </script>
 
 </body>
