@@ -37,20 +37,8 @@ if (!$connection) {
             crossorigin="anonymous"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
+<?php include 'admin_navbar.php'; ?>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <a class="navbar-brand" href="admin_dashboard.php">Notera</a>
-                <li class="nav-item">
-                    <a class="nav-link active" href="../user_dashboard.php">User View</a>
-                </li>
-                <!-- Other navigation items -->
-            </ul>
-        </div>
-    </div>
-</nav><br>
 
     
 <center><h4>Manage Subcategory</h4><br></center>

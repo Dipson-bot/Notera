@@ -27,44 +27,7 @@ $result = mysqli_stmt_get_result($stmt);
 </head>
 <body>
     <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark" data-bs-theme="dark">
-        <div class="container-fluid">
-            
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <a class="navbar-brand" href="user_dashboard.php">Notera</a>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="listofBooks.php">List of Books</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="contact.php">Contact Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="aboutus.php">About Us</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" role="button" data-bs-toggle="dropdown">My Profile </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="view_profile.php">View Profile</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="edit_profile.php">Edit Profile</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a class="dropdown-item" href="change_password.php">Change Password</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" role="button" href="logout.php">Logout</a>
-                    </li>
-                </ul>
-
-                <!-- Search bar -->
-                <form class="d-flex" action="search.php" method="post">
-                    <input class="form-control me-2" type="search" placeholder="Search by Book Name" aria-label="Search" name="book_name">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+    <?php include 'navbar.php'; ?>
     
     <div class="container col-12 m-5">
         <div class="col-12 m-auto">

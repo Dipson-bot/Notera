@@ -198,4 +198,3 @@ if (!$downloaded_books_result) {
 </body>
 </html>
 
-<checking class=

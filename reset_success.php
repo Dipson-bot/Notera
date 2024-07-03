@@ -14,14 +14,7 @@
     </script>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="index.php">Notera Management System</a>
-        </div>
-        <!-- Add your navigation links here -->
-    </div>
-</nav><br>
+<?php include 'navbar.php'; ?>
 
 <div class="row justify-content-center">
     <div class="col-md-8">
