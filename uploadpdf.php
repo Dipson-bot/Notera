@@ -144,7 +144,6 @@ if (!$result) {
          ?>   
         <h2 class="text-center">Upload Books</h2>
         <form action="" method="post" class="form-control" enctype="multipart/form-data">
-            <input type="file" class="form-control" name="choosefile" required>
             <!-- Input for book cover -->
         <label for="bookcover" class="form-label">Choose Image</label>
         <input type="file" class="form-control mb-3" id="bookcover" name="bookcover" accept="image/*">
