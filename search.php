@@ -18,13 +18,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
     $searchTerm = $_POST["search_query"];
 
     $conn = mysqli_connect("localhost", "root", "", "pdfupload");
+    $conn_lms = mysqli_connect("localhost", "root", "", "lms");
 
-    // Search by both book_name and cat_name using JOIN with the 'category' table
-    $searchQuery = "SELECT images.*, category.cat_name 
+    if (!$conn || !$conn_lms) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    // Search by book_name, cat_name, and user name
+    $searchQuery = "SELECT images.*, category.cat_name, users.name AS uploaded_by_name 
                     FROM images 
                     LEFT JOIN category ON images.cat_id = category.cat_id 
-                    WHERE images.book_name LIKE '%$searchTerm%' OR category.cat_name LIKE '%$searchTerm%'";
-    
+                    LEFT JOIN lms.users ON images.uploaded_by = lms.users.id 
+                    WHERE images.book_name LIKE '%$searchTerm%' 
+                    OR category.cat_name LIKE '%$searchTerm%' 
+                    OR users.name LIKE '%$searchTerm%'";
+
     $result = mysqli_query($conn, $searchQuery);
 
     if (mysqli_num_rows($result) > 0) {
@@ -39,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
         echo '<th>Author Name</th>';
         echo '<th>Published Date</th>';
         echo '<th>Category</th>';
+        echo '<th>Uploaded By</th>';
         echo '<th>Action</th>';
         echo '</tr>';
         echo '</thead>';
@@ -55,6 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
             echo '<td>' . $row['author_name'] . '</td>';
             echo '<td>' . $row['published_date'] . '</td>';
             echo '<td>' . $row['cat_name'] . '</td>';
+            echo '<td>' . $row['uploaded_by_name'] . '</td>';
             echo '<td>';
             echo '<a href="' . $pdfFilePath . '" target="_blank" class="btn btn-primary">View</a>';
             echo '<a href="' . $pdfFilePath . '" download class="btn btn-success">Download</a>';
@@ -72,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
     }
 
     mysqli_close($conn);
+    mysqli_close($conn_lms);
 }
 ?>
 

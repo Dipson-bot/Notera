@@ -29,16 +29,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_approve'])) {
         $row = mysqli_fetch_assoc($selectResult);
         $categoryId = $row['cat_id'];
         $subcategoryId = $row['subcat_id']; // Fetch subcat_id from pending_Books table
+        $uploaded_by = $row['uploaded_by'];
 
-        // Insert data into images table with subcat_id
-        $insertQuery = "INSERT INTO `images` (`pdf`, `book_name`, `author_name`, `published_date`, `book_cover`, `cat_id`, `subcat_id`)
-                        SELECT `pdf`, `book_name`, `author_name`, `published_date`, `book_cover`, '$categoryId', '$subcategoryId' 
+        // Insert data into images table with subcat_id and uploaded_by
+        $insertQuery = "INSERT INTO `images` (`pdf`, `book_name`, `author_name`, `published_date`, `book_cover`, `cat_id`, `subcat_id`, `uploaded_by`)
+                        SELECT `pdf`, `book_name`, `author_name`, `published_date`, `book_cover`, '$categoryId', '$subcategoryId', '$uploaded_by'
                         FROM `pending_Books` WHERE `id`='$bookId'";
 
         if (mysqli_query($conn, $insertQuery)) {
-            // Remove thNotera from pending_Books table after moving to images table
+            // Remove the book from pending_Books table after moving to images table
             $deleteQuery = "DELETE FROM `pending_Books` WHERE `id`='$bookId'";
             if (mysqli_query($conn, $deleteQuery)) {
+                mysqli_close($conn); // Close connection before redirection
                 header("Location: admin_dashboard.php"); // Redirect to admin dashboard after approval and removal
                 exit();
             } else {

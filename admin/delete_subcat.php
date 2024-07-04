@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 // Check if the user is not logged in, redirect to index.php
@@ -18,11 +17,15 @@ $subcat_id = "";
 
 // Check if the subcategory ID is set in the URL
 if (isset($_GET['sid'])) {
-    $subcat_id = $_GET['sid'];
+    $subcat_id = intval($_GET['sid']); // Ensure subcat_id is an integer
 
     // Delete subcategory from the database using prepared statement
     $query = "DELETE FROM subcategory WHERE subcat_id = ?";
     $stmt = mysqli_prepare($connection, $query);
+
+    if ($stmt === false) {
+        die("Prepare statement failed: " . mysqli_error($connection));
+    }
 
     // Bind parameter
     mysqli_stmt_bind_param($stmt, "i", $subcat_id);
@@ -33,6 +36,7 @@ if (isset($_GET['sid'])) {
         mysqli_stmt_close($stmt);
         // Redirect to the manage_subcat.php page after successful deletion
         header("location: manage_subcat.php");
+        exit();
     } else {
         echo "Subcategory deletion failed: " . mysqli_error($connection);
     }

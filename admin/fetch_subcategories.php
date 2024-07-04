@@ -29,7 +29,7 @@ if (isset($_GET['category_id'])) {
     // Output the subcategories as JSON
     echo json_encode($subcategories);
 
-    // Close the database connection
+    // Close the statement
     $stmt->close();
 } else {
     // Handle the case where no category ID is provided

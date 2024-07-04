@@ -6,5 +6,5 @@
 ?>
 <script type="text/javascript">
 	alert("Book Deleted successfully...");
-	window.location.href = "manage_book.php";
+	window.location.href = "add_book.php";
 </script>

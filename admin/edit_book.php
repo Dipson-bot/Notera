@@ -125,7 +125,9 @@ if (isset($_GET['id'])) {
 <div class="container col-6 mt-5">
     <h1 class="text-center">Edit Book</h1>
     <form action="" method="post" enctype="multipart/form-data">
-        <input type="text" class="form-control mb-3" name="bookname" placeholder="Book Name" value="<?php echo $book['book_name']; ?>" required>
+        <label for="bookcover" class="form-label">Note Name</label>
+        <input type="text" class="form-control mb-3" name="bookname" placeholder="Note Name" value="<?php echo $book['book_name']; ?>" required>
+        <label for="bookcover" class="form-label">Author Name</label>
         <input type="text" class="form-control mb-3" name="authorname" placeholder="Author Name" value="<?php echo $book['author_name']; ?>" required>
         <!-- Input for book cover -->
         <label for="bookcover" class="form-label">Choose Image</label>
@@ -134,8 +136,8 @@ if (isset($_GET['id'])) {
         <label for="choosefile" class="form-label">Choose PDF</label>
         <input type="file" class="form-control mb-3" id="choosefile" name="choosefile">
         <!-- Dropdown for category selection -->
-        <select class="form-control mb-3" name="category_id" required>
-            <option value="">Select Category</option>
+        <select class="form-control mb-3" name="category_id" id="category_id" required>
+            <option value="">Select Semester</option>
             <?php
             // Retrieve category names and IDs from the database
             $sql = "SELECT cat_id, cat_name FROM category";
@@ -147,11 +149,13 @@ if (isset($_GET['id'])) {
             ?>
         </select>
         <!-- Dropdown for subcategory selection -->
-        <select class="form-control mb-3" name="subcat_id" required>
-            <option value="">Select Subcategory</option>
+        <select class="form-control mb-3" name="subcat_id" id="subcategory_id" required>
+            <option value="">Select Subject</option>
             <?php
-            // Retrieve subcategory names and IDs from the database based on selected category
+            // Initially selected category ID
             $selectedCatId = $book['cat_id'];
+
+            // Fetch subcategories for the initially selected category
             $sqlSub = "SELECT subcat_id, subcat_name FROM subcategory WHERE cat_id = $selectedCatId";
             $resultSub = mysqli_query($conn, $sqlSub);
             while ($rowSub = mysqli_fetch_assoc($resultSub)) {
@@ -166,5 +170,37 @@ if (isset($_GET['id'])) {
 
 <!-- Include Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- jQuery for AJAX functionality -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // On change of category dropdown, fetch and populate subcategories dropdown
+    $('#category_id').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) {
+            $.ajax({
+                type: 'GET',
+                url: 'fetch_subcategories.php',
+                data: { category_id: categoryId },
+                dataType: 'json',
+                success: function(response) {
+                    var subcategoryDropdown = $('#subcategory_id');
+                    subcategoryDropdown.empty();
+                    subcategoryDropdown.append('<option value="">Select Subject</option>');
+                    $.each(response, function(key, value) {
+                        subcategoryDropdown.append('<option value="' + value.subcat_id + '">' + value.subcat_name + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#subcategory_id').empty();
+            $('#subcategory_id').append('<option value="">Select Subject</option>');
+        }
+    });
+});
+</script>
+
 </body>
 </html>
