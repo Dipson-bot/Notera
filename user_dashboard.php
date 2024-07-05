@@ -476,7 +476,7 @@ if (isset($_POST['search_query'])) {
 <footer class="bg-dark text-center text-white">
     <!-- Copyright -->
     <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-        © 2023 Copyright: Notera Management System <br> All rights reserved.
+        © 2023 Copyright: Notes Management System <br> All rights reserved.
         <a class="text-white" href="https://mdbootstrap.com/"></a>
     </div>
     <!-- Copyright -->
