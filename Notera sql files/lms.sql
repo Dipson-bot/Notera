@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2024 at 05:37 PM
+-- Generation Time: Jul 05, 2024 at 11:00 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -123,6 +123,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `mobile` varchar(10) DEFAULT NULL,
   `address` varchar(250) NOT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
   `role` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -130,10 +131,11 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `mobile`, `address`, `role`) VALUES
-(17, 'Asim Shrestha', 'asim@gmail.com', '$2y$10$pQs2NgYmMUdN2B1V4iSkUe1rf3uZlqhNQNJbW72La2EMGNXNQdRvm', '1122334455', 'dhulikhel', 'admin'),
-(29, 'thapa', 'thapa@gmail.com', '$2y$10$YvxjJNcvOmGkcXD5K7v7n.neSWDca1FfUm3kNSEbu53wNdb0gZ94i', '9988776655', 'bhaktapur', 'admin'),
-(38, 'Raj Kumar Khadka', 'raj@gmail.com', '$2y$10$tcVMRRYsvdUsRc.CzIrn2uPmcmZ7tmP5TVM1o63KR2x3zQs0jyGOe', '9798471234', 'Kadaghari', 'user');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `mobile`, `address`, `profile_picture`, `role`) VALUES
+(17, 'Asim Shrestha', 'asim@gmail.com', '$2y$10$pQs2NgYmMUdN2B1V4iSkUe1rf3uZlqhNQNJbW72La2EMGNXNQdRvm', '1122334455', 'dhulikhel', NULL, 'admin'),
+(29, 'Dipson Thapa', 'thapa@gmail.com', '$2y$10$H7xPlh/uh4WRUQeAm8zmhetp0lHHCK.TQpm8nizp.vNwxtVp.zNV.', '9988776655', 'bhaktapur', 'uploads/dipson.jpg', 'admin'),
+(38, 'Raj Kumar Khadka', 'raj@gmail.com', '$2y$10$UkbYLsLiepkFcljwiIvQsegPynytqdPsgzLAOhPsBZG99zoK7WJHO', '9798471234', 'Kadaghari', NULL, 'user'),
+(40, 'ram bahadur', 'ram@gmail.com', '$2y$10$N3RZdx.9QvMV25QwhQEi.OXzeGexlDUsclUPDRtdoN/Xc4C/PLwz.', '9765432101', 'Kadaghari', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -203,7 +205,7 @@ ALTER TABLE `issued_books`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

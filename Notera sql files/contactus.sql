@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2024 at 05:38 PM
+-- Generation Time: Jul 05, 2024 at 11:01 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,8 +45,8 @@ INSERT INTO `contactus` (`sno`, `name`, `email`, `concern`, `dt`) VALUES
 (19, 'Dipson Thapa', 'dipson@gmail.com', 'hello', '2023-06-09 20:46:49'),
 (21, 'Prasiddha', 'prasi@gmail.com', 'Hello', '2023-06-09 20:57:12'),
 (22, 'RajKumar', 'rajkd@gmail.com', 'I am raj', '2023-06-09 22:03:48'),
-(30, '', '', 'hiiisdjf', '2024-04-20 21:18:41'),
-(31, '', '', 'im raj', '2024-04-20 21:21:08');
+(34, 'Raj Kumar Khadka', 'raj@gmail.com', 'sdf', '2024-07-02 12:51:34'),
+(35, 'Raj Kumar Khadka', 'raj@gmail.com', '12 05', '2024-07-02 12:52:02');
 
 --
 -- Indexes for dumped tables
@@ -66,7 +66,7 @@ ALTER TABLE `contactus`
 -- AUTO_INCREMENT for table `contactus`
 --
 ALTER TABLE `contactus`
-  MODIFY `sno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `sno` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
