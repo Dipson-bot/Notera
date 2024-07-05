@@ -20,7 +20,6 @@ $connection = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$connection) {
     die("Database connection failed: " . mysqli_connect_error());
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +38,6 @@ if (!$connection) {
 <body>
 <?php include 'admin_navbar.php'; ?>
 
-
-    
 <center><h4>Manage Subcategory</h4><br></center>
 <div class="row">
     <div class="col-md-2"></div>
@@ -55,7 +52,10 @@ if (!$connection) {
                 </tr>
             </thead>
             <?php
-            $query = "SELECT s.subcat_id, s.subcat_name, c.cat_name FROM subcategory s JOIN category c ON s.cat_id = c.cat_id";
+            $query = "SELECT s.subcat_id, s.subcat_name, c.cat_name 
+                      FROM subcategory s 
+                      JOIN category c ON s.cat_id = c.cat_id 
+                      ORDER BY c.cat_name, s.subcat_name";
             $query_run = mysqli_query($connection, $query);
 
             if (!$query_run) {
@@ -113,7 +113,7 @@ if (!$connection) {
     function deleteSubcategory() {
         // Get the subcatId from the data attribute
         var subcatId = $('#confirmDeleteModal').data('subcatid');
-        // TODO: Perform the deletion action using AJAX or form submission
+        // Perform the deletion action using AJAX or form submission
 
         // For example, you can use AJAX to delete the subcategory
         $.ajax({

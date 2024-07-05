@@ -8,9 +8,14 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
-// Database connection for PDF uploads
-$conn = mysqli_connect("localhost", "root", "", "pdfupload");
-if (!$conn) {
+// Database connections
+$conn_pdfupload = mysqli_connect("localhost", "root", "", "pdfupload");
+if (!$conn_pdfupload) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+$conn_lms = mysqli_connect("localhost", "root", "", "lms");
+if (!$conn_lms) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
@@ -19,34 +24,34 @@ if (isset($_POST['btn_search'])) {
     $searchQuery = $_POST['search_query'];
 
     // SQL query to filter books based on search query
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
-            FROM images
-            LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
-            LEFT JOIN category ON images.cat_id = category.cat_id
-            LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
-            LEFT JOIN reviews ON images.id = reviews.book_id
-            WHERE images.book_name LIKE '%$searchQuery%'
-            OR category.cat_name LIKE '%$searchQuery%'
-            OR subcategory.subcat_name LIKE '%$searchQuery%'
-            OR images.author_name LIKE '%$searchQuery%'
-            OR lms_users.name LIKE '%$searchQuery%'
-            GROUP BY images.id
-            ORDER BY avg_rating DESC, images.date_added DESC";
+    $sql = "SELECT pdfupload.images.*, lms.users.name AS uploaded_by_name, lms.users.id AS uploaded_by_id, pdfupload.category.cat_name, pdfupload.subcategory.subcat_name, AVG(pdfupload.reviews.rating) AS avg_rating
+            FROM pdfupload.images
+            LEFT JOIN lms.users ON pdfupload.images.uploaded_by = lms.users.id
+            LEFT JOIN pdfupload.category ON pdfupload.images.cat_id = pdfupload.category.cat_id
+            LEFT JOIN pdfupload.subcategory ON pdfupload.images.subcat_id = pdfupload.subcategory.subcat_id
+            LEFT JOIN pdfupload.reviews ON pdfupload.images.id = pdfupload.reviews.book_id
+            WHERE pdfupload.images.book_name LIKE '%$searchQuery%'
+            OR pdfupload.category.cat_name LIKE '%$searchQuery%'
+            OR pdfupload.subcategory.subcat_name LIKE '%$searchQuery%'
+            OR pdfupload.images.author_name LIKE '%$searchQuery%'
+            OR lms.users.name LIKE '%$searchQuery%'
+            GROUP BY pdfupload.images.id
+            ORDER BY avg_rating DESC, pdfupload.images.date_added DESC";
 } else {
     // Default SQL query to display all books
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
-            FROM images
-            LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
-            LEFT JOIN category ON images.cat_id = category.cat_id
-            LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
-            LEFT JOIN reviews ON images.id = reviews.book_id
-            GROUP BY images.id
-            ORDER BY avg_rating DESC, images.date_added DESC";
+    $sql = "SELECT pdfupload.images.*, lms.users.name AS uploaded_by_name, lms.users.id AS uploaded_by_id, pdfupload.category.cat_name, pdfupload.subcategory.subcat_name, AVG(pdfupload.reviews.rating) AS avg_rating
+            FROM pdfupload.images
+            LEFT JOIN lms.users ON pdfupload.images.uploaded_by = lms.users.id
+            LEFT JOIN pdfupload.category ON pdfupload.images.cat_id = pdfupload.category.cat_id
+            LEFT JOIN pdfupload.subcategory ON pdfupload.images.subcat_id = pdfupload.subcategory.subcat_id
+            LEFT JOIN pdfupload.reviews ON pdfupload.images.id = pdfupload.reviews.book_id
+            GROUP BY pdfupload.images.id
+            ORDER BY avg_rating DESC, pdfupload.images.date_added DESC";
 }
 
-$result = mysqli_query($conn, $sql);
+$result = mysqli_query($conn_pdfupload, $sql);
 if (!$result) {
-    die("Query failed: " . mysqli_error($conn));
+    die("Query failed: " . mysqli_error($conn_pdfupload));
 }
 ?>
 
@@ -113,8 +118,39 @@ if (!$result) {
     <div class="col-6 m-auto">
         <?php
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_img'])) {
-            // Handle book upload logic (existing code)
-            // ...
+            $bookName = $_POST['bookname'];
+            $authorName = $_POST['authorname'];
+            $categoryId = $_POST['category_id'];
+            $subCategoryId = $_POST['subcat_id'];
+            $uploadedBy = $_SESSION['id']; // Assuming the user ID is stored in the session
+
+            // Handle file uploads
+            $bookCover = $_FILES['bookcover']['name'];
+            $pdfFile = $_FILES['choosefile']['name'];
+
+            // Set the target directories
+            $targetDirCover = "book_covers/";
+            $targetDirPdf = "pdf/";
+
+            // Set the target file paths
+            $targetFilePathCover = $targetDirCover . basename($bookCover);
+            $targetFilePathPdf = $targetDirPdf . basename($pdfFile);
+
+            // Move uploaded files to the target directories
+            if (move_uploaded_file($_FILES['bookcover']['tmp_name'], $targetFilePathCover) &&
+                move_uploaded_file($_FILES['choosefile']['tmp_name'], $targetFilePathPdf)) {
+                // Insert book details into the database
+                $sqlInsert = "INSERT INTO images (book_name, author_name, cat_id, subcat_id, uploaded_by, book_cover, pdf, date_added)
+                              VALUES ('$bookName', '$authorName', '$categoryId', '$subCategoryId', '$uploadedBy', '$bookCover', '$pdfFile', NOW())";
+
+                if (mysqli_query($conn_pdfupload, $sqlInsert)) {
+                    echo "<div class='alert alert-success'>Note uploaded successfully!</div>";
+                } else {
+                    echo "<div class='alert alert-danger'>Error: " . mysqli_error($conn_pdfupload) . "</div>";
+                }
+            } else {
+                echo "<div class='alert alert-danger'>Error uploading files.</div>";
+            }
         }
         ?>
         <form action="" method="post" class="form-control" enctype="multipart/form-data">
@@ -125,7 +161,7 @@ if (!$result) {
             <label for="choosefile" class="form-label">Choose PDF</label>
             <input type="file" class="form-control mb-3" id="choosefile" name="choosefile">
             <input type="text" class="form-control" name="bookname" placeholder="Book Name" required>
-            <input type="text" class="form-control" name="authorname" placeholder="Author Name" required>
+            <input type="text" class="form-control" name="authorname" placeholder="Written By" required>
             <!-- <input type="date" class="form-control" name="pubdate" placeholder="Published Date" required> -->
             <!-- Add a dropdown for category selection -->
             <select class="form-control" name="category_id" id="category_id" required>
@@ -133,7 +169,7 @@ if (!$result) {
                 <?php
                 // Retrieve category names and IDs from the database
                 $sqlCategories = "SELECT cat_id, cat_name FROM category";
-                $resultCategories = mysqli_query($conn, $sqlCategories);
+                $resultCategories = mysqli_query($conn_pdfupload, $sqlCategories);
                 while ($row = mysqli_fetch_assoc($resultCategories)) {
                     echo "<option value='" . $row['cat_id'] . "'>" . $row['cat_name'] . "</option>";
                 }
@@ -172,7 +208,7 @@ if (!$result) {
             // Calculate average rating for the current book
             $book_id = $fetch['id'];
             $average_rating_sql = "SELECT AVG(rating) AS avg_rating FROM reviews WHERE book_id = $book_id";
-            $average_rating_result = mysqli_query($conn, $average_rating_sql);
+            $average_rating_result = mysqli_query($conn_pdfupload, $average_rating_sql);
             $average_rating_row = mysqli_fetch_assoc($average_rating_result);
             $average_rating = $average_rating_row['avg_rating'];
 
@@ -219,6 +255,7 @@ if (!$result) {
         <?php
         }
         ?>
+        
     </div>
     
 </div>
@@ -259,6 +296,7 @@ $(document).ready(function() {
 </html>
 
 <?php
-// Close database connection
-mysqli_close($conn);
+// Close database connections
+mysqli_close($conn_pdfupload);
+mysqli_close($conn_lms);
 ?>

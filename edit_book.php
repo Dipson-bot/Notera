@@ -56,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Update the book details in the database
     $update_query = "UPDATE images SET book_name = '$book_name', author_name = '$author_name', book_cover = '$book_cover', pdf = '$pdf' WHERE id = $book_id";
     if (mysqli_query($pdfupload_connection, $update_query)) {
-        $message = "Book details updated successfully";
+        $message = "Notes details updated successfully";
     } else {
-        $message = "Failed to update book details: " . mysqli_error($pdfupload_connection);
+        $message = "Failed to update Notes details: " . mysqli_error($pdfupload_connection);
     }
 }
 ?>
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Book</title>
+    <title>Edit Notes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         .container {
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="container">
     <div class="form-container">
-        <h3>Edit Book</h3>
+        <h3>Edit Notes</h3>
         <?php if ($message): ?>
             <div class="alert alert-info">
                 <?php echo htmlspecialchars($message); ?>
@@ -101,15 +101,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
         <form action="edit_book.php?id=<?php echo $book_id; ?>" method="post" enctype="multipart/form-data">
             <div class="mb-3">
-                <label for="book_name" class="form-label">Book Name</label>
+                <label for="book_name" class="form-label">Note Name</label>
                 <input type="text" class="form-control" id="book_name" name="book_name" value="<?php echo htmlspecialchars($book_name); ?>" required>
             </div>
             <div class="mb-3">
-                <label for="author_name" class="form-label">Author Name</label>
+                <label for="author_name" class="form-label">Written By</label>
                 <input type="text" class="form-control" id="author_name" name="author_name" value="<?php echo htmlspecialchars($author_name); ?>" required>
             </div>
             <div class="mb-3">
-                <label for="book_cover" class="form-label">Book Cover</label>
+                <label for="book_cover" class="form-label">Note Cover</label>
                 <input type="file" class="form-control" id="book_cover" name="book_cover">
                 <img src="admin/book_covers/<?php echo htmlspecialchars($book_cover); ?>" alt="Current Book Cover" class="img-thumbnail mt-2" width="100">
             </div>

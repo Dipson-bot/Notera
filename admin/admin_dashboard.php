@@ -1,7 +1,7 @@
 <?php
     require("functions.php");
     session_start();
-		// Check if the user is not logged in, redirect to index.php
+	// Check if the user is not logged in, redirect to index.php
 	if (!isset($_SESSION['id'])) {
 		header("Location: ../index.php");
 		exit();
@@ -25,51 +25,30 @@
 
 
 	// Database connection for the new 'pdfupload' database
-		$pdfUploadServername = "localhost";
-		$pdfUploadUsername = "root";
-		$pdfUploadPassword = "";
-		$pdfUploadDatabase = "pdfupload";
+	$pdfUploadServername = "localhost";
+	$pdfUploadUsername = "root";
+	$pdfUploadPassword = "";
+	$pdfUploadDatabase = "pdfupload";
 
-		$pdfUploadConn = mysqli_connect($pdfUploadServername, $pdfUploadUsername, $pdfUploadPassword, $pdfUploadDatabase);
+	$pdfUploadConn = mysqli_connect($pdfUploadServername, $pdfUploadUsername, $pdfUploadPassword, $pdfUploadDatabase);
 
-if (!$pdfUploadConn) {
-    die("Connection to pdfupload database failed: " . mysqli_connect_error());
-}
+	if (!$pdfUploadConn) {
+	    die("Connection to pdfupload database failed: " . mysqli_connect_error());
+	}
 
-$pdfUploadQuery = "SELECT pb.*, c.cat_name as category_name FROM `pending_Books` pb 
-LEFT JOIN `category` c ON pb.cat_id = c.cat_id";
+	$pdfUploadQuery = "SELECT pb.*, c.cat_name as category_name FROM `pending_Books` pb 
+	LEFT JOIN `category` c ON pb.cat_id = c.cat_id";
 
+	$pdfUploadResult = mysqli_query($pdfUploadConn, $pdfUploadQuery);
 
+	if (!$pdfUploadResult) {
+	    die("Error executing query: " . mysqli_error($pdfUploadConn));
+	}
 
-
-$pdfUploadResult = mysqli_query($pdfUploadConn, $pdfUploadQuery);
-
-if (!$pdfUploadResult) {
-    die("Error executing query: " . mysqli_error($pdfUploadConn));
-}
-
-		// $pdfUploadQuery = "SELECT * FROM `pending_Books`";
-		// $pdfUploadResult = mysqli_query($pdfUploadConn, $pdfUploadQuery);
-
-		// Count the number of pending Books
-		$countPendingBooksQuery = "SELECT COUNT(*) as total FROM `pending_Books`";
-		$countPendingBooksResult = mysqli_query($pdfUploadConn, $countPendingBooksQuery);
-		$countPendingBooks = mysqli_fetch_assoc($countPendingBooksResult)['total'];
-
-
-        // Database connection for the 'lms' database
-        // $lmsServername = "localhost";
-        // $lmsUsername = "root";
-        // $lmsPassword = "";
-        // $lmsDatabase = "lms";
-
-        // $lmsConn = mysqli_connect($lmsServername, $lmsUsername, $lmsPassword, $lmsDatabase);
-
-        // if (!$lmsConn) {
-        //     die("Connection to lms database failed: " . mysqli_connect_error());
-        // }
-
-	
+	// Count the number of pending Books
+	$countPendingBooksQuery = "SELECT COUNT(*) as total FROM `pending_Books`";
+	$countPendingBooksResult = mysqli_query($pdfUploadConn, $countPendingBooksQuery);
+	$countPendingBooks = mysqli_fetch_assoc($countPendingBooksResult)['total'];
 ?>
 
 <!DOCTYPE html>
@@ -84,9 +63,6 @@ if (!$pdfUploadResult) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
     crossorigin="anonymous"></script>   
-	
-		
-
 	
 	<style>
         .card {
@@ -110,60 +86,60 @@ if (!$pdfUploadResult) {
 
 <?php include 'admin_navbar.php'; ?>
 
-	<div class="container mt-3">
-        <div class="row row-cols-1 row-cols-md-4 g-4">
-            <div class="col">
-                <div class="card">
-                    <div class="card-header">Registered User</div>
-                    <div class="card-body">
-                        <p class="card-text">No. of total Users: <?php echo get_user_count();?></p>
-                        <a class="btn btn-danger" href="Regusers.php">View Registered Users</a>
-                    </div>
+<div class="container mt-3">
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Registered User</div>
+                <div class="card-body">
+                    <p class="card-text">No. of total Users: <?php echo get_user_count();?></p>
+                    <a class="btn btn-danger" href="Regusers.php">View Registered Users</a>
                 </div>
             </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header">Total Notes</div>
-                    <div class="card-body">
-                        <p class="card-text">No of Notes available: <?php echo get_book_count();?></p>
-                        <a class="btn btn-success" href="add_book.php">View All Books</a>
-                    </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Total Notes</div>
+                <div class="card-body">
+                    <p class="card-text">No of Notes available: <?php echo get_book_count();?></p>
+                    <a class="btn btn-success" href="add_book.php">View All Books</a>
                 </div>
             </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header">Notes Categories</div>
-                    <div class="card-body">
-                        <p class="card-text">No of Note's Categories: <?php echo get_category_count();?></p>
-                        <a class="btn btn-warning" href="manage_cat.php">View Categories</a>
-                    </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Notes Categories</div>
+                <div class="card-body">
+                    <p class="card-text">No of Note's Categories: <?php echo get_category_count();?></p>
+                    <a class="btn btn-warning" href="manage_cat.php">View Categories</a>
                 </div>
             </div>
-			<div class="col">
-                <div class="card">
-                    <div class="card-header">Pending Notes</div>
-                    <div class="card-body">
-                        <p class="card-text">No. of Notes pending: <?php echo $countPendingBooks; ?></p>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pendingBooksModal">View Pending Books</button>
-                    </div>
+        </div>
+		<div class="col">
+            <div class="card">
+                <div class="card-header">Pending Notes</div>
+                <div class="card-body">
+                    <p class="card-text">No. of Notes pending: <?php echo $countPendingBooks; ?></p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pendingBooksModal">View Pending Books</button>
                 </div>
             </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header">Contact Form Submissions</div>
-                    <div class="card-body">
-                        <p class="card-text">No. of Submissions: <?php echo mysqli_num_rows($result);?></p>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#contactModal">
-                            View Submissions
-                        </button>
-                    </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Contact Form Submissions</div>
+                <div class="card-body">
+                    <p class="card-text">No. of Submissions: <?php echo mysqli_num_rows($result);?></p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#contactModal">
+                        View Submissions
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-   <!-- Modal to display contact form submissions -->
+<!-- Modal to display contact form submissions -->
 <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -175,7 +151,6 @@ if (!$pdfUploadResult) {
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Sno</th>
                             <th scope="col">Name</th>
                             <th scope="col">Email</th>
                             <th scope="col">Concern</th>
@@ -188,7 +163,6 @@ if (!$pdfUploadResult) {
                             // Loop through the results and display them in the table
                             while ($row = mysqli_fetch_assoc($result)) {
                                 echo "<tr>";
-                                echo "<td>" . $row['sno'] . "</td>";
                                 echo "<td>" . $row['name'] . "</td>";
                                 echo "<td>" . $row['email'] . "</td>";
                                 echo "<td>" . $row['concern'] . "</td>";
@@ -235,18 +209,6 @@ if (!$pdfUploadResult) {
                             $userQuery = "SELECT name FROM lms.users WHERE id = '$userId'";
                             $userResult = mysqli_query($pdfUploadConn, $userQuery);
                             $userName = mysqli_fetch_assoc($userResult)['name'];
-                            // if ($userResult) {
-                            //     // Check if the query returned any rows
-                            //     if (mysqli_num_rows($userResult) > 0) {
-                            //         $userName = mysqli_fetch_assoc($userResult)['name'];
-                            //     } else {
-                            //         $userName = "Unknown User"; // Set a default value or handle it as per your requirement
-                            //     }
-                            // } else {
-                            //     // Handle the case when the query fails
-                            //     $userName = "Unknown User";
-                            // }
-
                         ?>
                         <tr>
                             <td><img src="./book_covers/<?php echo $fetch['book_cover'] ?>" alt="Book Cover"
@@ -283,7 +245,6 @@ if (!$pdfUploadResult) {
     </div>
 </div>
 
-
 <script>
     function deleteContact(sno) {
         var confirmation = confirm("Are you sure you want to delete this contact?");
@@ -305,8 +266,5 @@ if (!$pdfUploadResult) {
     }
 </script>
 
-	
-
 </body>
-
 </html>

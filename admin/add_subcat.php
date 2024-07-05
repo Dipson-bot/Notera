@@ -52,6 +52,14 @@ if (isset($_POST['add_subcat'])) {
 
         if (mysqli_stmt_execute($stmt)) {
             mysqli_stmt_close($stmt);
+            header("Location: manage_subcat.php");
+            exit; // Make sure to exit after a header redirect
+        } else {
+            echo "Error: " . mysqli_error($connection);
+        }
+
+        if (mysqli_stmt_execute($stmt)) {
+            mysqli_stmt_close($stmt);
             mysqli_close($connection); // Close database connection
             echo '<script>alertMsg();</script>';
             exit; // Make sure to exit after a successful insert

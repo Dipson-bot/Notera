@@ -8,28 +8,34 @@
         $servername = "localhost";
         $username = "root";
         $password = "";
-        $database = "contacts";
+        $database = "contactus"; // Ensure the database name is correct
 
-        $conn = mysqli_connect($servername, $username, $password, $database);
+        $conn = new mysqli($servername, $username, $password, $database);
 
-        if (!$conn) {
-            die("Connection failed: " . mysqli_connect_error());
+        if ($conn->connect_error) {
+            http_response_code(500);
+            echo json_encode(["message" => "Connection failed: " . $conn->connect_error]);
+            exit();
         }
 
-        // Perform deletion logic using $sno
-        $query = "DELETE FROM `contactus` WHERE `sno` = $sno";
-        $result = mysqli_query($conn, $query);
+        // Prepare and bind
+        $stmt = $conn->prepare("DELETE FROM `contactus` WHERE `sno` = ?");
+        $stmt->bind_param("i", $sno);
 
-        // Check if deletion was successful
-        if($result) {
-            echo "Contact deleted successfully!";
+        // Execute the statement
+        if ($stmt->execute()) {
+            http_response_code(200);
+            echo json_encode(["message" => "Contact deleted successfully!"]);
         } else {
-            echo "Error: Unable to delete contact.";
+            http_response_code(500);
+            echo json_encode(["message" => "Error: Unable to delete contact."]);
         }
 
-        // Close the database connection
-        mysqli_close($conn);
+        // Close the statement and connection
+        $stmt->close();
+        $conn->close();
     } else {
-        echo "Invalid request!";
+        http_response_code(400);
+        echo json_encode(["message" => "Invalid request!"]);
     }
 ?>

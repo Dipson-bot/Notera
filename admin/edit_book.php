@@ -28,51 +28,53 @@ if (isset($_GET['id'])) {
 
     // Process form submission for updating book details
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['btn_edit'])) {
-        $bookName = $_POST['bookname'];
-        $authorName = $_POST['authorname'];
-        $category_id = $_POST['category_id'];
-        $subcat_id = $_POST['subcat_id'];
+        $updateFields = [];
+
+        if (!empty($_POST['bookname'])) {
+            $bookName = $_POST['bookname'];
+            $updateFields[] = "book_name = '$bookName'";
+        }
+
+        if (!empty($_POST['authorname'])) {
+            $authorName = $_POST['authorname'];
+            $updateFields[] = "author_name = '$authorName'";
+        }
+
+        if (!empty($_POST['category_id'])) {
+            $category_id = $_POST['category_id'];
+            $updateFields[] = "cat_id = '$category_id'";
+        }
+
+        if (!empty($_POST['subcat_id'])) {
+            $subcat_id = $_POST['subcat_id'];
+            $updateFields[] = "subcat_id = '$subcat_id'";
+        }
 
         // Check if a new book cover file is uploaded
-        $bookCover = $_FILES["bookcover"]["name"];
-        $bookCoverTemp = $_FILES["bookcover"]["tmp_name"];
+        if (!empty($_FILES["bookcover"]["name"])) {
+            $bookCover = $_FILES["bookcover"]["name"];
+            $bookCoverTemp = $_FILES["bookcover"]["tmp_name"];
 
-        // Check if a new PDF file is uploaded
-        $filename = $_FILES["choosefile"]["name"];
-        $tempfile = $_FILES["choosefile"]["tmp_name"];
-        $pdfFolder = "pdf/".$filename;
-
-        // Update book details including book cover and/or PDF file
-        if (!empty($bookCover)) {
             // Check if the uploaded file is an image
             $imageInfo = getimagesize($bookCoverTemp);
             if ($imageInfo === false) {
                 echo "<div class='alert alert-danger' role='alert'>
-                        <h4 class='text-center'>Invalid image format for book cover</h4>
+                        <h4 class='text-center'>Invalid image format for Note cover</h4>
                       </div>";
             } else {
                 // Move uploaded file to book_covers folder
                 $newBookCover = "book_covers/" . basename($bookCover);
                 move_uploaded_file($bookCoverTemp, $newBookCover);
-
-                // Update book details including book cover
-                $updateSql = "UPDATE images SET book_name = '$bookName', author_name = '$authorName', book_cover = '$bookCover', cat_id = '$category_id', subcat_id = '$subcat_id' WHERE id = $id";
-                if (mysqli_query($conn, $updateSql)) {
-                    echo "<div class='alert alert-success' role='alert'>
-                            <h4 class='text-center'>Book details updated successfully!</h4>
-                          </div>";
-                    // Optionally, redirect to another page after successful update
-                    // header("Location: list_books.php");
-                    // exit();
-                } else {
-                    echo "<div class='alert alert-danger' role='alert'>
-                            <h4 class='text-center'>Error updating book details: " . mysqli_error($conn) . "</h4>
-                          </div>";
-                }
+                $updateFields[] = "book_cover = '$bookCover'";
             }
         }
 
-        if (!empty($filename)) {
+        // Check if a new PDF file is uploaded
+        if (!empty($_FILES["choosefile"]["name"])) {
+            $filename = $_FILES["choosefile"]["name"];
+            $tempfile = $_FILES["choosefile"]["tmp_name"];
+            $pdfFolder = "pdf/" . $filename;
+
             // Check if the uploaded file has a PDF extension
             $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
             if ($fileExtension !== "pdf") {
@@ -82,22 +84,26 @@ if (isset($_GET['id'])) {
             } else {
                 // Move uploaded PDF file to pdf folder
                 move_uploaded_file($tempfile, $pdfFolder);
-
-                // Update PDF file in database
-                $updateSql = "UPDATE images SET pdf = '$filename' WHERE id = $id";
-                if (mysqli_query($conn, $updateSql)) {
-                    echo "<div class='alert alert-success' role='alert'>
-                            <h4 class='text-center'>PDF updated successfully!</h4>
-                          </div>";
-                    // Optionally, redirect to another page after successful update
-                    // header("Location: list_books.php");
-                    // exit();
-                } else {
-                    echo "<div class='alert alert-danger' role='alert'>
-                            <h4 class='text-center'>Error updating PDF file: " . mysqli_error($conn) . "</h4>
-                          </div>";
-                }
+                $updateFields[] = "pdf = '$filename'";
             }
+        }
+
+        // Update book details in database if there are fields to update
+        if (!empty($updateFields)) {
+            $updateSql = "UPDATE images SET " . implode(", ", $updateFields) . " WHERE id = $id";
+            if (mysqli_query($conn, $updateSql)) {
+                echo "<div class='alert alert-success' role='alert'>
+                        <h4 class='text-center'>Note details updated successfully!</h4>
+                      </div>";
+            } else {
+                echo "<div class='alert alert-danger' role='alert'>
+                        <h4 class='text-center'>Error updating Note details: " . mysqli_error($conn) . "</h4>
+                      </div>";
+            }
+        } else {
+            echo "<div class='alert alert-warning' role='alert'>
+                    <h4 class='text-center'>No fields to update</h4>
+                  </div>";
         }
     }
 } else {
@@ -115,7 +121,7 @@ if (isset($_GET['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Book</title>
+    <title>Edit Notes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -123,20 +129,21 @@ if (isset($_GET['id'])) {
 <?php include 'admin_navbar.php'; ?>
 
 <div class="container col-6 mt-5">
-    <h1 class="text-center">Edit Book</h1>
+    <h1 class="text-center">Edit Notes</h1>
     <form action="" method="post" enctype="multipart/form-data">
         <label for="bookcover" class="form-label">Note Name</label>
-        <input type="text" class="form-control mb-3" name="bookname" placeholder="Note Name" value="<?php echo $book['book_name']; ?>" required>
-        <label for="bookcover" class="form-label">Author Name</label>
-        <input type="text" class="form-control mb-3" name="authorname" placeholder="Author Name" value="<?php echo $book['author_name']; ?>" required>
+        <input type="text" class="form-control mb-3" name="bookname" placeholder="Note Name" value="<?php echo $book['book_name']; ?>">
+        <label for="bookcover" class="form-label">Written By</label>
+        <input type="text" class="form-control mb-3" name="authorname" placeholder="Written By" value="<?php echo $book['author_name']; ?>">
         <!-- Input for book cover -->
         <label for="bookcover" class="form-label">Choose Image</label>
         <input type="file" class="form-control mb-3" id="bookcover" name="bookcover" accept="image/*">
+        
         <!-- Input for PDF file -->
         <label for="choosefile" class="form-label">Choose PDF</label>
         <input type="file" class="form-control mb-3" id="choosefile" name="choosefile">
         <!-- Dropdown for category selection -->
-        <select class="form-control mb-3" name="category_id" id="category_id" required>
+        <select class="form-control mb-3" name="category_id" id="category_id">
             <option value="">Select Semester</option>
             <?php
             // Retrieve category names and IDs from the database
@@ -149,7 +156,7 @@ if (isset($_GET['id'])) {
             ?>
         </select>
         <!-- Dropdown for subcategory selection -->
-        <select class="form-control mb-3" name="subcat_id" id="subcategory_id" required>
+        <select class="form-control mb-3" name="subcat_id" id="subcategory_id">
             <option value="">Select Subject</option>
             <?php
             // Initially selected category ID
@@ -164,7 +171,7 @@ if (isset($_GET['id'])) {
             }
             ?>
         </select>
-        <button type="submit" name="btn_edit" class="btn btn-primary">Update Book</button>
+        <button type="submit" name="btn_edit" class="btn btn-primary">Update Note</button>
     </form>
 </div>
 
