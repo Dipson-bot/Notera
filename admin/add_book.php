@@ -206,7 +206,7 @@ if (!$result) {
                     </div>
                 </div>
                 <div class="col-md-2 book-actions">
-                    <a href="pdf/<?php echo $fetch['pdf'] ?>" class="btn btn-secondary mb-1">View</a>
+                    <a href="pdf/<?php echo $fetch['pdf'] ?>" target="_blank" class="btn btn-secondary mb-1">View</a>
                     <a href="edit_book.php?id=<?php echo $fetch['id'] ?>" class="btn btn-secondary">Edit</a>
                     <form action="delete.php" method="post">
                         <input type="hidden" name="id" value="<?php echo $fetch['id'] ?>">
@@ -215,10 +215,12 @@ if (!$result) {
                 </div>
             </div>
         </div>
+        
         <?php
         }
         ?>
     </div>
+    
 </div>
 
 <!-- Include JavaScript for AJAX request to fetch subcategories -->

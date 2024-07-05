@@ -43,7 +43,7 @@ if (!isset($_SESSION['id'])) {
             }
             ?>
 
-            <h2 class="text-center">List of Books</h2>
+            <h2 class="text-center">List of Notes</h2>
 			<br>
 
             <!-- Add a table to display the list of Books -->

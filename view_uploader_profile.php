@@ -17,28 +17,46 @@ if (!$conn_lms) {
 if (isset($_GET['user_id'])) {
     $user_id = $_GET['user_id'];
 
-    // Query to fetch user details from lms.users table
-    $query = "SELECT * FROM users WHERE id = $user_id";
-    $query_run = mysqli_query($conn_lms, $query);
+    // Query to fetch user details from lms.users table using prepared statement
+    $stmt = mysqli_prepare($conn_lms, "SELECT * FROM users WHERE id = ?");
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-    if ($query_run) {
-        $user_data = mysqli_fetch_assoc($query_run);
-        if (!$user_data) {
-            die("User not found");
-        }
+    if ($result && $user_data = mysqli_fetch_assoc($result)) {
+        // User data fetched successfully
     } else {
-        die("Query failed: " . mysqli_error($conn_lms));
+        die("User not found or query failed: " . mysqli_error($conn_lms));
     }
 } else {
     die("User ID parameter not provided");
 }
 
-// Query to fetch books uploaded by the user from pdfupload.images table
-$sql = "SELECT * FROM images WHERE uploaded_by = $user_id";
-$result = mysqli_query($conn_pdfupload, $sql);
-if (!$result) {
-    die("Query failed: " . mysqli_error($conn_pdfupload));
-}
+// Pagination settings
+$limit = 6; // Number of notes per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
+// Query to fetch books uploaded by the user from pdfupload.images table with pagination and average rating
+$stmt = mysqli_prepare($conn_pdfupload, 
+    "SELECT images.*, 
+            (SELECT AVG(rating) 
+             FROM reviews 
+             WHERE reviews.book_id = images.id) as avg_rating 
+     FROM images 
+     WHERE uploaded_by = ? 
+     LIMIT ?, ?");
+mysqli_stmt_bind_param($stmt, "iii", $user_id, $start, $limit);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+// Query to count total notes uploaded by the user
+$total_stmt = mysqli_prepare($conn_pdfupload, "SELECT COUNT(*) AS total FROM images WHERE uploaded_by = ?");
+mysqli_stmt_bind_param($total_stmt, "i", $user_id);
+mysqli_stmt_execute($total_stmt);
+$total_result = mysqli_stmt_get_result($total_stmt);
+$total_notes = mysqli_fetch_assoc($total_result)['total'];
+$total_pages = ceil($total_notes / $limit);
 ?>
 
 <!DOCTYPE html>
@@ -68,6 +86,24 @@ if (!$result) {
             border: 5px solid #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .user-info h3 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .user-info p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .user-info p strong {
+            color: #333;
+        }
         .book-tile {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -95,6 +131,15 @@ if (!$result) {
         }
         .btn-group {
             margin-top: 10px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+        .stars {
+            display: inline-block;
+        }
+        .stars span {
+            color: #FFD700; /* Golden color for stars */
         }
     </style>
 </head>
@@ -106,11 +151,9 @@ if (!$result) {
         <img src="<?php echo !empty($user_data['profile_picture']) ? htmlspecialchars($user_data['profile_picture']) : 'uploads/path_to_default_image.jpg'; ?>" class="rounded-circle" alt="Profile Picture">
     </div>
     <div class="user-info">
-        <h3 class="text-center mb-4"> <?php echo htmlspecialchars($user_data['name']); ?></h3>
-        <h5>Email:</h5>
-        <p><?php echo htmlspecialchars($user_data['email']); ?></p>
-        <h5>Address:</h5>
-        <p><?php echo htmlspecialchars($user_data['address']); ?></p>
+        <h3><?php echo htmlspecialchars($user_data['name']); ?></h3>
+        <p><strong>Email:</strong> <?php echo htmlspecialchars($user_data['email']); ?></p>
+        <p><strong>Address:</strong> <?php echo htmlspecialchars($user_data['address']); ?></p>
     </div>
 
     <div class="mt-5">
@@ -126,18 +169,69 @@ if (!$result) {
                         <div class="col-md-9">
                             <h4><?php echo htmlspecialchars($row['book_name']); ?></h4>
                             <p><strong>Author:</strong> <?php echo htmlspecialchars($row['author_name']); ?></p>
-                            <p><strong>Uploaded Date:</strong> <?php echo htmlspecialchars($row['published_date']); ?></p>
+                            <p><strong>Uploaded Date:</strong> <?php echo date('F j, Y', strtotime($row['published_date'])); ?></p>
+                            <p><strong>Average Rating:</strong> 
+                                <span class="book-rating">
+                                    <?php 
+                                    $avg_rating = $row['avg_rating'];
+                                    if ($avg_rating) {
+                                        // Display star rating
+                                        $full_stars = floor($avg_rating);
+                                        $half_star = ($avg_rating - $full_stars) >= 0.5 ? true : false;
+                                        $empty_stars = 5 - $full_stars - ($half_star ? 1 : 0);
+                                        
+                                        for ($i = 0; $i < $full_stars; $i++) {
+                                            echo '★';
+                                        }
+                                        if ($half_star) {
+                                            echo '☆';
+                                        }
+                                        for ($i = 0; $i < $empty_stars; $i++) {
+                                            echo '☆';
+                                        }
+                                    } else {
+                                        echo "No ratings yet";
+                                    }
+                                    ?>
+                                </span>
+                                <br>
+                                <span>
+                                    <?php 
+                                    if ($avg_rating) {
+                                        echo "(" . number_format($avg_rating, 1) . " / 5)";
+                                    }
+                                    ?>
+                                </span>
+                            </p>
                             <!-- Additional details as needed -->
                         </div>
                     </div>
                     <div class="btn-group mt-3" role="group" aria-label="Book Actions">
                         <a href="admin/pdf/<?php echo htmlspecialchars($row['pdf']); ?>" target="_blank" class="btn btn-primary">View</a>
+                        <a href="admin/pdf/<?php echo htmlspecialchars($row['pdf']); ?>" download class="btn btn-success">Download</a>
                         <!-- Other actions as needed -->
                     </div>
                 </div>
             </div>
             <?php } ?>
         </div>
+
+        <!-- Pagination Links -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <?php if($page <= 1){ echo 'disabled'; } ?>">
+                    <a class="page-link" href="<?php if($page<= 1){ echo '#'; } else { echo "?user_id=$user_id&page=" . ($page - 1); } ?>">Previous</a>
+                </li>
+                <?php for($i = 1; $i <= $total_pages; $i++): ?>
+                <li class="page-item <?php if($page == $i){ echo 'active'; } ?>">
+                    <a class="page-link" href="?user_id=<?php echo $user_id; ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+                <?php endfor; ?>
+                <li class="page-item <?php if($page >= $total_pages){ echo 'disabled'; } ?>">
+                    <a class="page-link" href="<?php if($page >= $total_pages){ echo '#'; } else { echo "?user_id=$user_id&page=" . ($page + 1); } ?>">Next</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </div>
 

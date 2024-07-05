@@ -13,6 +13,7 @@ $mobile = "";
 $address = "";
 $profilePicture = ""; // Initialize profile picture variable
 
+// Fetch user details from the LMS database
 $query = "SELECT * FROM users WHERE email = '$_SESSION[email]'";
 $query_run = mysqli_query($lms_connection, $query);
 if ($row = mysqli_fetch_assoc($query_run)) {
@@ -39,21 +40,13 @@ if ($user_row = mysqli_fetch_assoc($user_result)) {
 }
 
 // Fetch uploaded books by the user based on 'uploaded_by' column
-$uploaded_books_query = "SELECT images.book_name, images.author_name, images.date_added
+$uploaded_books_query = "SELECT images.*, AVG(reviews.rating) AS avg_rating
                          FROM images
-                         WHERE images.uploaded_by = $user_id";
+                         LEFT JOIN reviews ON images.id = reviews.book_id
+                         WHERE images.uploaded_by = $user_id
+                         GROUP BY images.id";
 $uploaded_books_result = mysqli_query($pdfupload_connection, $uploaded_books_query);
 if (!$uploaded_books_result) {
-    die("Query failed: " . mysqli_error($pdfupload_connection));
-}
-
-// Fetch downloaded books by the user
-$downloaded_books_query = "SELECT images.book_name, images.author_name, downloads.download_date
-                           FROM downloads
-                           JOIN images ON downloads.book_id = images.id
-                           WHERE downloads.user_id = $user_id";
-$downloaded_books_result = mysqli_query($pdfupload_connection, $downloaded_books_query);
-if (!$downloaded_books_result) {
     die("Query failed: " . mysqli_error($pdfupload_connection));
 }
 ?>
@@ -78,47 +71,75 @@ if (!$downloaded_books_result) {
         .profile-picture img {
             max-width: 300px;
             border-radius: 50%;
-            border: 5px solid #fff; /* Add a white border around the image */
-            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Add a slight shadow for better contrast */
+            border: 5px solid #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         .user-info {
             padding: 20px;
-            background-color: #f8f9fa; /* Light gray background */
-            border: 1px solid #ddd; /* Light gray border */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Soft shadow */
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
         .user-info h5 {
             margin-bottom: 10px;
-            font-weight: bold; /* Make text bold */
-            color: #333; /* Darken text color */
+            font-weight: bold;
+            color: #333;
         }
         .user-info .info-tile {
             padding: 10px;
             margin-bottom: 10px;
-            background-color: #fff; /* White background for tiles */
-            border: 1px solid #ccc; /* Light gray border */
-            border-radius: 6px; /* Rounded corners */
-            box-shadow: 0 0 5px rgba(0,0,0,0.1); /* Soft shadow */
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
         .user-info .info-tile h5 {
             margin-bottom: 5px;
-            font-size: 16px; /* Font size for tile headings */
+            font-size: 16px;
         }
         .user-info .info-tile p {
             margin: 0;
-            font-size: 14px; /* Font size for tile content */
-            color: #666; /* Dark gray text color */
+            font-size: 14px;
+            color: #666;
         }
-        .table-container {
-            margin-top: 20px;
+        .book-tile {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 15px;
+            transition: all 0.3s ease;
         }
-        .table th, .table td {
-            vertical-align: middle;
+        .book-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
         }
-        .table th {
-            background-color: #f8f9fa;
+        .book-tile img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .book-details {
+            margin-top: 10px;
+        }
+        .book-rating {
+            font-size: 20px;
+            color: #FFD700; /* Golden color for stars */
+        }
+        .btn-group {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn-group .btn {
+            flex: 1;
+            margin-right: 5px;
+        }
+        .btn-group .btn:last-child {
+            margin-right: 0;
         }
     </style>
 </head>
@@ -130,85 +151,72 @@ if (!$downloaded_books_result) {
     <div class="row">
         <div class="col-md-4">
             <div class="profile-picture">
-                <img src="<?php echo $profilePicture; ?>" class="rounded-circle" alt="Profile Picture">
+                <img src="<?php echo htmlspecialchars($profilePicture); ?>" class="rounded-circle" alt="Profile Picture">
             </div>
         </div>
         <div class="col-md-8">
             <div class="profile-details">
                 <div class="user-info">
-                <h5 class="text-center">Profile Details</h5>
+                    <h5 class="text-center">Profile Details</h5>
                     <div class="info-tile">
                         <h5>Name:</h5>
-                        <p><?php echo $name; ?></p>
+                        <p><?php echo htmlspecialchars($name); ?></p>
                     </div>
                     <div class="info-tile">
                         <h5>Email:</h5>
-                        <p><?php echo $email; ?></p>
+                        <p><?php echo htmlspecialchars($email); ?></p>
                     </div>
                     <div class="info-tile">
                         <h5>Mobile:</h5>
-                        <p><?php echo $mobile; ?></p>
+                        <p><?php echo htmlspecialchars($mobile); ?></p>
                     </div>
                     <div class="info-tile">
                         <h5>Address:</h5>
-                        <p><?php echo $address; ?></p>
+                        <p><?php echo htmlspecialchars($address); ?></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="table-container">
-                <h5 class="text-center">Uploaded Books</h5>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Book Name</th>
-                            <th>Author</th>
-                            <th>Uploaded Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        while ($row = mysqli_fetch_assoc($uploaded_books_result)) {
-                            echo '<tr>';
-                            echo '<td>' . $row['book_name'] . '</td>';
-                            echo '<td>' . $row['author_name'] . '</td>';
-                            echo '<td>' . $row['date_added'] . '</td>';
-                            echo '</tr>';
-                        }
-                        ?>
-                    </tbody>
-                </table>
+    <div class="mt-5">
+        <h3 class="text-center mb-4">Notes Uploaded by <?php echo htmlspecialchars($name); ?></h3>
+        <div class="row">
+            <?php while ($row = mysqli_fetch_assoc($uploaded_books_result)) { 
+                $average_rating = $row['avg_rating'] !== null ? round($row['avg_rating'], 1) : 'No ratings yet'; 
+            ?>
+            <div class="col-md-6">
+                <div class="book-tile">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="admin/book_covers/<?php echo htmlspecialchars($row['book_cover']); ?>" alt="Book Cover">
+                        </div>
+                        <div class="col-md-9">
+                            <h4><?php echo htmlspecialchars($row['book_name']); ?></h4>
+                            <p><strong>Author:</strong> <?php echo htmlspecialchars($row['author_name']); ?></p>
+                            <p><strong>Uploaded Date:</strong> <?php echo date('F j, Y', strtotime($row['date_added'])); ?></p>
+                            <div class="book-rating">
+                                <?php
+                                if ($row['avg_rating'] !== null) {
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        echo ($i <= $average_rating) ? '★' : '☆';
+                                    }
+                                    echo " ($average_rating)";
+                                } else {
+                                    echo "No ratings yet";
+                                }
+                                ?>
+                            </div>
+                            <div class="btn-group" role="group" aria-label="Book Actions">
+                                <a href="admin/pdf/<?php echo htmlspecialchars($row['pdf']); ?>" target="_blank" class="btn btn-primary">View</a>
+                                <a href="edit_book.php?id=<?php echo htmlspecialchars($row['id']); ?>" class="btn btn-warning">Edit</a>
+                                <a href="delete_book.php?id=<?php echo htmlspecialchars($row['id']); ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this book?');">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="table-container">
-                <h5 class="text-center">Downloaded Books</h5>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Book Name</th>
-                            <th>Author</th>
-                            <th>Downloaded Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        while ($row = mysqli_fetch_assoc($downloaded_books_result)) {
-                            echo '<tr>';
-                            echo '<td>' . $row['book_name'] . '</td>';
-                            echo '<td>' . $row['author_name'] . '</td>';
-                            echo '<td>' . $row['download_date'] . '</td>';
-                            echo '</tr>';
-                        }
-                        ?>
-                    </tbody>
-                </table>
-            </div>
+            <?php } ?>
         </div>
     </div>
 </div>

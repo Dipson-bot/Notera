@@ -116,34 +116,34 @@ if (!$pdfUploadResult) {
                 <div class="card">
                     <div class="card-header">Registered User</div>
                     <div class="card-body">
-                        <p class="card-text">No. total Users: <?php echo get_user_count();?></p>
+                        <p class="card-text">No. of total Users: <?php echo get_user_count();?></p>
                         <a class="btn btn-danger" href="Regusers.php">View Registered Users</a>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header">Total Book</div>
+                    <div class="card-header">Total Notes</div>
                     <div class="card-body">
-                        <p class="card-text">No of Books available: <?php echo get_book_count();?></p>
-                        <a class="btn btn-success" href="RegBooks.php">View All Books</a>
+                        <p class="card-text">No of Notes available: <?php echo get_book_count();?></p>
+                        <a class="btn btn-success" href="add_book.php">View All Books</a>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header">Book Categories</div>
+                    <div class="card-header">Notes Categories</div>
                     <div class="card-body">
-                        <p class="card-text">No of Book's Categories: <?php echo get_category_count();?></p>
-                        <a class="btn btn-warning" href="Regcat.php">View Categories</a>
+                        <p class="card-text">No of Note's Categories: <?php echo get_category_count();?></p>
+                        <a class="btn btn-warning" href="manage_cat.php">View Categories</a>
                     </div>
                 </div>
             </div>
 			<div class="col">
                 <div class="card">
-                    <div class="card-header">Pending Books</div>
+                    <div class="card-header">Pending Notes</div>
                     <div class="card-body">
-                        <p class="card-text">No. of Books pending: <?php echo $countPendingBooks; ?></p>
+                        <p class="card-text">No. of Notes pending: <?php echo $countPendingBooks; ?></p>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pendingBooksModal">View Pending Books</button>
                     </div>
                 </div>

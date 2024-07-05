@@ -89,7 +89,6 @@ $review_result = mysqli_query($pdfupload_connection, $review_sql);
 if (!$review_result) {
     die("Query failed: " . mysqli_error($pdfupload_connection));
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -115,25 +114,66 @@ if (!$review_result) {
         }
     });
     </script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        .book-cover {
+            max-width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .book-details h4 {
+            margin-bottom: 15px;
+        }
+        .star-rating span {
+            font-size: 24px;
+            margin-right: 5px;
+        }
+        .review {
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .review strong {
+            display: inline-block;
+            width: 100px;
+        }
+        .review p {
+            margin: 5px 0;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .modal-content {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 
-<div class="container col-12 m-5">
-    <div class="col-12 m-auto">
-        <h1 class="text">Rate and Review</h1> <!-- Moved title to top -->
-        <hr>
-        <div class="mb-3">
-            <img src="admin/book_covers/<?php echo $book['book_cover']; ?>" alt="Book Cover" style="max-width: 200px;">
+<div class="container">
+    
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <img src="admin/book_covers/<?php echo $book['book_cover']; ?>" alt="Book Cover" class="book-cover">
         </div>
-        <h4>Book Name: <?php echo $book['book_name']; ?></h4> <!-- Display book name above author name -->
-        <h4>Author: <?php echo $book['author_name']; ?></h4>
-        <h4>Published Date: <?php echo $book['published_date']; ?></h4>
-
-        <!-- Display Average Rating -->
-        <hr>
-        <div class="mb-3">
-            <h4>Average Rating:</h4>
+        <div class="col-md-8 book-details">
+            <h4><strong>Book Name:</strong> <?php echo $book['book_name']; ?></h4>
+            <h4><strong>Author:</strong> <?php echo $book['author_name']; ?></h4>
+            <h4><strong>Published Date:</strong> <?php echo date('F j, Y', strtotime($book['published_date'])); ?></h4>
+            <hr>
+            <h4><strong>Average Rating:</strong></h4>
             <div class="star-rating">
                 <?php
                 $full_stars = floor($average_rating);
@@ -153,56 +193,55 @@ if (!$review_result) {
             </div>
             <p><?php echo number_format($average_rating, 1); ?>/5</p>
         </div>
-
-        <hr>
-
-        <h3>Reviews</h3>
-        <?php
-        while ($review = mysqli_fetch_assoc($review_result)) {
-            echo "<div class='review'>";
-            echo "<p><strong>User:</strong> " . $review['user_name'] . "</p>";
-            echo "<p><strong>Rating:</strong> " . $review['rating'] . "/5</p>";
-            echo "<p><strong>Review:</strong> " . $review['review_text'] . "</p>";
-            echo "<p><strong>Date:</strong> " . $review['review_date'] . "</p>";
-            echo "<hr>";
-            echo "</div>";
-        }
-        ?>
-
-        <hr>
-
-        <?php
-        // Check if the user has already reviewed the book
-        $check_review_sql = "SELECT * FROM reviews WHERE book_id = $book_id AND user_id = $_SESSION[id]";
-        $check_review_result = mysqli_query($pdfupload_connection, $check_review_sql);
-        if (mysqli_num_rows($check_review_result) == 0) {
-        ?>
-        <h3>Submit Your Review</h3>
-        <form method="post" action="">
-            <input type="hidden" name="book_id" value="<?php echo $book_id; ?>">
-            <!-- Store user_id from session to submit with review -->
-            <div class="form-group">
-                <label for="rating">Rating:</label>
-                <select name="rating" class="form-control">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="review_text">Review:</label>
-                <textarea name="review_text" class="form-control" rows="4"></textarea>
-            </div>
-            <button type="submit" name="submit_review" class="btn btn-primary mt-2">Submit</button>
-        </form>
-        <?php
-        } else {
-            echo "<p>You have already reviewed this book.</p>";
-        }
-        ?>
     </div>
+
+    <hr>
+
+    <h3 class="mb-4">Reviews</h3>
+    <?php
+    while ($review = mysqli_fetch_assoc($review_result)) {
+        echo "<div class='review'>";
+        echo "<p><strong>User:</strong> " . htmlspecialchars($review['user_name']) . "</p>";
+        echo "<p><strong>Rating:</strong> " . htmlspecialchars($review['rating']) . "/5</p>";
+        echo "<p><strong>Review:</strong> " . htmlspecialchars($review['review_text']) . "</p>";
+        echo "<p><strong>Date:</strong> " . date('F j, Y', strtotime($review['review_date'])) . "</p>";
+        echo "</div>";
+    }
+    ?>
+
+    <hr>
+
+    <?php
+    // Check if the user has already reviewed the book
+    $check_review_sql = "SELECT * FROM reviews WHERE book_id = $book_id AND user_id = $_SESSION[id]";
+    $check_review_result = mysqli_query($pdfupload_connection, $check_review_sql);
+    if (mysqli_num_rows($check_review_result) == 0) {
+    ?>
+    <h3>Submit Your Review</h3>
+    <form method="post" action="">
+        <input type="hidden" name="book_id" value="<?php echo $book_id; ?>">
+        <!-- Store user_id from session to submit with review -->
+        <div class="form-group">
+            <label for="rating">Rating:</label>
+            <select name="rating" class="form-control">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="review_text">Review:</label>
+            <textarea name="review_text" class="form-control" rows="4" placeholder="Write your review here..."></textarea>
+        </div>
+        <button type="submit" name="submit_review" class="btn btn-primary mt-2">Submit</button>
+    </form>
+    <?php
+    } else {
+        echo "<p class='alert alert-info'>You have already reviewed this book.</p>";
+    }
+    ?>
 </div>
 
 <!-- Success Modal -->

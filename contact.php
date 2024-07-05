@@ -86,11 +86,38 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contact Us</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #343a40;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 
-<div class="container mt-3">
+<div class="container mt-5">
     <h1>Contact Us for your concerns</h1>
     <form action="contact.php" method="post">
         <div class="mb-3">
