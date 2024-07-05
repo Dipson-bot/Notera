@@ -8,7 +8,7 @@
         $servername = "localhost";
         $username = "root";
         $password = "";
-        $database = "contactus"; // Ensure the database name is correct
+        $database = "pdfupload"; // Ensure the database name is correct
 
         $conn = new mysqli($servername, $username, $password, $database);
 
