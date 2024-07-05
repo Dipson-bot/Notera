@@ -399,7 +399,7 @@ if (isset($_POST['search_query'])) {
                                         
                                         echo '<div class="book-container">';
                                             echo '<div class="content">';
-                                            echo '<a href="' . $pdfFilePath . '" class="btn">Read Online</a>';
+                                            echo '<a href="' . $pdfFilePath . '" target="_blank" class="btn">Read Online</a>';
                                             echo '</div>';
                                             
                                             
