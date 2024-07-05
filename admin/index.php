@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>LMS | Login</title>
+	<title>Notera | Login</title>
 	<meta charset="utf-8" name="viewport" content="width=device-width,intial-scale=1">
 	<link rel="stylesheet" type="text/css" href="../bootstrap-4.4.1/css/bootstrap.min.css">
   	<script type="text/javascript" src="./bootstrap-4.4.1/js/juqery_latest.js"></script>
@@ -42,7 +42,7 @@
 			<?php 
 				if(isset($_POST['login'])){
 					$connection = mysqli_connect("localhost","root","");
-					$db = mysqli_select_db($connection,"lms");
+					$db = mysqli_select_db($connection,"pdfupload");
 					$query = "select * from admins where email = '$_POST[email]'";
 					$query_run = mysqli_query($connection,$query);
 					while ($row = mysqli_fetch_assoc($query_run)) {

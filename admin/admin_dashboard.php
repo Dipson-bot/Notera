@@ -206,7 +206,7 @@
                         while ($fetch = mysqli_fetch_assoc($pdfUploadResult)) {
                            // Inside the loop fetching pending Books
                             $userId = $fetch['user_id'];
-                            $userQuery = "SELECT name FROM lms.users WHERE id = '$userId'";
+                            $userQuery = "SELECT name FROM pdfupload.users WHERE id = '$userId'";
                             $userResult = mysqli_query($pdfUploadConn, $userQuery);
                             $userName = mysqli_fetch_assoc($userResult)['name'];
                         ?>

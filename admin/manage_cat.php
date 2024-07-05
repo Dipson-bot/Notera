@@ -14,7 +14,7 @@ if (!isset($_SESSION['email'])) {
     exit;
 }
 
-$connection = mysqli_connect("localhost", "root", "", "lms");
+$connection = mysqli_connect("localhost", "root", "", "pdfupload");
 
 // Check if the database connection was successful
 if (!$connection) {

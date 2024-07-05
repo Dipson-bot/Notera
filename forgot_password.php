@@ -3,7 +3,7 @@ session_start();
 
 if (isset($_POST['reset_request'])) {
     $connection = mysqli_connect("localhost", "root", "");
-    $db = mysqli_select_db($connection, "lms");
+    $db = mysqli_select_db($connection, "pdfupload");
 
     $email = $_POST['email'];
     $mobile = $_POST['mobile'];

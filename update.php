@@ -1,6 +1,6 @@
 <?php
 	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
+	$db = mysqli_select_db($connection,"pdfupload");
 	$query = "update users set name = '$_POST[name]',email = '$_POST[email]',mobile = '$_POST[mobile]',address = '$_POST[address]'";
 	$query_run = mysqli_query($connection,$query);
 ?>

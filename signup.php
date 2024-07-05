@@ -60,7 +60,7 @@ ini_set('display_errors', 1);
         <?php
         if (isset($_POST['register'])) {
             $connection = mysqli_connect("localhost", "root", "");
-            $db = mysqli_select_db($connection, "lms");
+            $db = mysqli_select_db($connection, "pdfupload");
             $name = $_POST['name'];
             $email = $_POST['email'];
             $mobile = $_POST['mobile'];

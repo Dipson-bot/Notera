@@ -5,10 +5,10 @@ include('admin/functions.php');
 // Set the default timezone to Kathmandu, Nepal
 date_default_timezone_set('Asia/Kathmandu');
 
-// Database connection for lms database
-$lms_connection = mysqli_connect("localhost", "root", "", "lms");
+// Database connection for Notera database
+$lms_connection = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$lms_connection) {
-    die("LMS Database connection failed: " . mysqli_connect_error());
+    die("Notera Database connection failed: " . mysqli_connect_error());
 }
 
 // Database connection for pdfupload database
@@ -83,8 +83,8 @@ if (!empty($average_rating)) {
     $average_rating = 0.0; // Default to 0.0 or any suitable value
 }
 
-// Fetch reviews for the current book from pdfupload.reviews and link to lms.users
-$review_sql = "SELECT reviews.*, users.name AS user_name FROM reviews LEFT JOIN lms.users ON reviews.user_id = users.id WHERE book_id = $book_id";
+// Fetch reviews for the current book from pdfupload.reviews and link to pdfupload.users
+$review_sql = "SELECT reviews.*, users.name AS user_name FROM reviews LEFT JOIN pdfupload.users ON reviews.user_id = users.id WHERE book_id = $book_id";
 $review_result = mysqli_query($pdfupload_connection, $review_sql);
 if (!$review_result) {
     die("Query failed: " . mysqli_error($pdfupload_connection));

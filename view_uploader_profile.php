@@ -7,17 +7,17 @@ if (!$conn_pdfupload) {
     die("Connection to pdfupload database failed: " . mysqli_connect_error());
 }
 
-// Database connection for lms database
-$conn_lms = mysqli_connect("localhost", "root", "", "lms");
+// Database connection for Notera database
+$conn_lms = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$conn_lms) {
-    die("Connection to lms database failed: " . mysqli_connect_error());
+    die("Connection to pdfupload database failed: " . mysqli_connect_error());
 }
 
 // Fetch user details based on user_id from URL parameter
 if (isset($_GET['user_id'])) {
     $user_id = $_GET['user_id'];
 
-    // Query to fetch user details from lms.users table using prepared statement
+    // Query to fetch user details from pdfupload.users table using prepared statement
     $stmt = mysqli_prepare($conn_lms, "SELECT * FROM users WHERE id = ?");
     mysqli_stmt_bind_param($stmt, "i", $user_id);
     mysqli_stmt_execute($stmt);

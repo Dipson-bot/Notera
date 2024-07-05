@@ -2,7 +2,7 @@
 	session_start();
 	#fetch data from database
 	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
+	$db = mysqli_select_db($connection,"pdfupload");
 	$book_name = "";
 	$author = "";
 	$book_no = "";

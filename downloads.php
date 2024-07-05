@@ -6,9 +6,9 @@ include('admin/functions.php');
 date_default_timezone_set('Asia/Kathmandu');
 
 // Database connection for lms database
-$lms_connection = mysqli_connect("localhost", "root", "", "lms");
+$lms_connection = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$lms_connection) {
-    die("LMS Database connection failed: " . mysqli_connect_error());
+    die("Notera Database connection failed: " . mysqli_connect_error());
 }
 
 // Database connection for pdfupload database

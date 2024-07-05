@@ -2,7 +2,7 @@
 	session_start();
 	#fetch data from database
 	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
+	$db = mysqli_select_db($connection,"pdfupload");
 	$author_id = "";
 	$author_name = "";
 	$query = "select * from authors where author_id = $_GET[aid]";
@@ -43,7 +43,7 @@
 <?php
 	if(isset($_POST['update_author'])){
 		$connection = mysqli_connect("localhost","root","");
-		$db = mysqli_select_db($connection,"lms");
+		$db = mysqli_select_db($connection,"pdfupload");
 		$query = "update authors set author_name = '$_POST[author_name]' where author_id = $_GET[aid]";
 		$query_run = mysqli_query($connection,$query);
 		header("location:manage_author.php");

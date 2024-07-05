@@ -4,7 +4,7 @@ session_start();
 if (isset($_POST['reset_password'])) {
     // Reuse the database connection from your previous code
     $connection = mysqli_connect("localhost", "root", "");
-    $db = mysqli_select_db($connection, "lms");
+    $db = mysqli_select_db($connection, "pdfupload");
 
     $newPassword = $_POST['new_password'];
     $email = $_SESSION['reset_email'];

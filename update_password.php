@@ -1,7 +1,7 @@
 <?php
 session_start();
 $connection = mysqli_connect("localhost", "root", "");
-$db = mysqli_select_db($connection, "lms");
+$db = mysqli_select_db($connection, "pdfupload");
 
 if (isset($_POST['update'])) {
     // Verify if the user is logged in

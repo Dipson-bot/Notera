@@ -95,7 +95,7 @@ error_reporting(E_ALL);
                                                     $db = mysqli_select_db($connection, "pdfupload");
                                                 
                                                     // Check in the users table
-                                                    $user_query = "SELECT * FROM lms.users WHERE email = '$_POST[email]'";
+                                                    $user_query = "SELECT * FROM pdfupload.users WHERE email = '$_POST[email]'";
                                                     $user_query_run = mysqli_query($connection, $user_query);
 
                                                     if (mysqli_num_rows($user_query_run) > 0) {
@@ -159,17 +159,17 @@ error_reporting(E_ALL);
                                             <?php
                                                 if (isset($_POST['register'])) {
                                                     $connection = mysqli_connect("localhost", "root", "");
-                                                    $db = mysqli_select_db($connection, "lms");
+                                                    $db = mysqli_select_db($connection, "pdfupload");
                                                     $name = $_POST['name'];
                                                     $email = $_POST['email'];
                                                     $mobile = $_POST['mobile'];
                                                     $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Hash the password
 
                                                     // Check if email or mobile already exist in the database
-                                                    $check_email_query = "SELECT * FROM lms.users WHERE email='$email'";
+                                                    $check_email_query = "SELECT * FROM pdfupload.users WHERE email='$email'";
                                                     $check_email_result = mysqli_query($connection, $check_email_query);
 
-                                                    $check_mobile_query = "SELECT * FROM lms.users WHERE mobile='$mobile'";
+                                                    $check_mobile_query = "SELECT * FROM pdfupload.users WHERE mobile='$mobile'";
                                                     $check_mobile_result = mysqli_query($connection, $check_mobile_query);
                                                     if (!preg_match("/^[a-zA-Z ]{3,}$/", $name)) {
                                                         echo '<script type="text/javascript">alert("Name must contain only letters and spaces and it must be at least 3 letters")</script>';

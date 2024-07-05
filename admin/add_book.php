@@ -14,7 +14,7 @@ if (!$conn_pdfupload) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-$conn_lms = mysqli_connect("localhost", "root", "", "lms");
+$conn_lms = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$conn_lms) {
     die("Connection failed: " . mysqli_connect_error());
 }
@@ -24,9 +24,9 @@ if (isset($_POST['btn_search'])) {
     $searchQuery = $_POST['search_query'];
 
     // SQL query to filter books based on search query
-    $sql = "SELECT pdfupload.images.*, lms.users.name AS uploaded_by_name, lms.users.id AS uploaded_by_id, pdfupload.category.cat_name, pdfupload.subcategory.subcat_name, AVG(pdfupload.reviews.rating) AS avg_rating
+    $sql = "SELECT pdfupload.images.*, pdfupload.users.name AS uploaded_by_name, pdfupload.users.id AS uploaded_by_id, pdfupload.category.cat_name, pdfupload.subcategory.subcat_name, AVG(pdfupload.reviews.rating) AS avg_rating
             FROM pdfupload.images
-            LEFT JOIN lms.users ON pdfupload.images.uploaded_by = lms.users.id
+            LEFT JOIN pdfupload.users ON pdfupload.images.uploaded_by = pdfupload.users.id
             LEFT JOIN pdfupload.category ON pdfupload.images.cat_id = pdfupload.category.cat_id
             LEFT JOIN pdfupload.subcategory ON pdfupload.images.subcat_id = pdfupload.subcategory.subcat_id
             LEFT JOIN pdfupload.reviews ON pdfupload.images.id = pdfupload.reviews.book_id
@@ -34,14 +34,14 @@ if (isset($_POST['btn_search'])) {
             OR pdfupload.category.cat_name LIKE '%$searchQuery%'
             OR pdfupload.subcategory.subcat_name LIKE '%$searchQuery%'
             OR pdfupload.images.author_name LIKE '%$searchQuery%'
-            OR lms.users.name LIKE '%$searchQuery%'
+            OR pdfupload.users.name LIKE '%$searchQuery%'
             GROUP BY pdfupload.images.id
             ORDER BY avg_rating DESC, pdfupload.images.date_added DESC";
 } else {
     // Default SQL query to display all books
-    $sql = "SELECT pdfupload.images.*, lms.users.name AS uploaded_by_name, lms.users.id AS uploaded_by_id, pdfupload.category.cat_name, pdfupload.subcategory.subcat_name, AVG(pdfupload.reviews.rating) AS avg_rating
+    $sql = "SELECT pdfupload.images.*, pdfupload.users.name AS uploaded_by_name, pdfupload.users.id AS uploaded_by_id, pdfupload.category.cat_name, pdfupload.subcategory.subcat_name, AVG(pdfupload.reviews.rating) AS avg_rating
             FROM pdfupload.images
-            LEFT JOIN lms.users ON pdfupload.images.uploaded_by = lms.users.id
+            LEFT JOIN pdfupload.users ON pdfupload.images.uploaded_by = pdfupload.users.id
             LEFT JOIN pdfupload.category ON pdfupload.images.cat_id = pdfupload.category.cat_id
             LEFT JOIN pdfupload.subcategory ON pdfupload.images.subcat_id = pdfupload.subcategory.subcat_id
             LEFT JOIN pdfupload.reviews ON pdfupload.images.id = pdfupload.reviews.book_id

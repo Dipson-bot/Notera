@@ -1,6 +1,6 @@
 <?php
 	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
+	$db = mysqli_select_db($connection,"pdfupload");
 	$query = "delete from Books wherNotera_no = $_GET[bn]";
 	$query_run = mysqli_query($connection,$query);
 ?>

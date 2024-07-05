@@ -8,7 +8,7 @@ session_start();
 if (isset($_POST['update'])) {
     // Reuse the database connection from signup.php
     $connection = mysqli_connect("localhost", "root", "");
-    $db = mysqli_select_db($connection, "lms");
+    $db = mysqli_select_db($connection, "pdfupload");
 
     // Retrieve the current password hash from the database
     $query = "SELECT password FROM users WHERE email = '$_SESSION[email]'";

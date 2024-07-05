@@ -6,9 +6,9 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-$lms_conn = mysqli_connect("localhost", "root", "", "lms");
+$lms_conn = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$lms_conn) {
-    die("Connection to LMS database failed: " . mysqli_connect_error());
+    die("Connection to Notera database failed: " . mysqli_connect_error());
 }
 
 //handle search query
@@ -19,9 +19,9 @@ if (isset($_POST['search_query'])) {
     $search_query = $_POST['search_query'];
     $min_rating = isset($_POST['min_rating']) ? (int)$_POST['min_rating'] : 0;
     
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
+    $sql = "SELECT images.*, pdfupload_users.name AS uploaded_by_name, pdfupload_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
             FROM images
-            LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
+            LEFT JOIN pdfupload.users AS pdfupload_users ON images.uploaded_by = pdfupload_users.id
             LEFT JOIN category ON images.cat_id = category.cat_id
             LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
             LEFT JOIN reviews ON images.id = reviews.book_id
@@ -29,15 +29,15 @@ if (isset($_POST['search_query'])) {
             OR category.cat_name LIKE '%$search_query%'
             OR subcategory.subcat_name LIKE '%$search_query%'
             OR images.author_name LIKE '%$search_query%'
-            OR lms_users.name LIKE '%$search_query%')
+            OR pdfupload_users.name LIKE '%$search_query%')
             GROUP BY images.id
             HAVING avg_rating >= $min_rating
             ORDER BY avg_rating DESC, images.date_added DESC";
 } else if (isset($_GET['category'])) {
     $selectedCategory = urldecode($_GET['category']);
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
+    $sql = "SELECT images.*, pdfupload_users.name AS uploaded_by_name, pdfupload_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
             FROM images
-            LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
+            LEFT JOIN pdfupload.users AS pdfupload_users ON images.uploaded_by = pdfupload_users.id
             LEFT JOIN category ON images.cat_id = category.cat_id
             LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
             LEFT JOIN reviews ON images.id = reviews.book_id
@@ -45,9 +45,9 @@ if (isset($_POST['search_query'])) {
             GROUP BY images.id
             ORDER BY avg_rating DESC, images.date_added DESC";
 } else {
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
+    $sql = "SELECT images.*, pdfupload_users.name AS uploaded_by_name, pdfupload_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
             FROM images
-            LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
+            LEFT JOIN pdfupload.users AS pdfupload_users ON images.uploaded_by = pdfupload_users.id
             LEFT JOIN category ON images.cat_id = category.cat_id
             LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
             LEFT JOIN reviews ON images.id = reviews.book_id

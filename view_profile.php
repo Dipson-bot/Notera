@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-// Fetch data from 'lms' database
-$lms_connection = mysqli_connect("localhost", "root", "", "lms");
+// Fetch data from 'Notera' database
+$lms_connection = mysqli_connect("localhost", "root", "", "pdfupload");
 if (!$lms_connection) {
     die("Database connection failed: " . mysqli_connect_error());
 }
@@ -13,7 +13,7 @@ $mobile = "";
 $address = "";
 $profilePicture = ""; // Initialize profile picture variable
 
-// Fetch user details from the LMS database
+// Fetch user details from the Notera database
 $query = "SELECT * FROM users WHERE email = '$_SESSION[email]'";
 $query_run = mysqli_query($lms_connection, $query);
 if ($row = mysqli_fetch_assoc($query_run)) {

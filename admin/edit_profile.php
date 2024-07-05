@@ -6,7 +6,7 @@ session_start();
             exit();
         }
 
-$connection = mysqli_connect("localhost", "root", "", "lms");
+$connection = mysqli_connect("localhost", "root", "", "pdfupload");
 
 if (!$connection) {
     die("Connection failed: " . mysqli_connect_error());

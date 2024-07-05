@@ -7,7 +7,7 @@ if (!isset($_SESSION['id'])) {
 	exit();
 }
 $connection = mysqli_connect("localhost", "root", "");
-$db = mysqli_select_db($connection, "lms");
+$db = mysqli_select_db($connection, "pdfupload");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['user_id'])) {
     $userId = $_POST['user_id'];

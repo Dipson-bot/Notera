@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	$connection = mysqli_connect("localhost","root","");
-	$db = mysqli_select_db($connection,"lms");
+	$db = mysqli_select_db($connection,"pdfupload");
 	$password = "";
 	$query = "select * from admins where email = '$_SESSION[email]'";
 	$query_run = mysqli_query($connection,$query);

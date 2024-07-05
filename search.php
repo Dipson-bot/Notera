@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
     $searchTerm = $_POST["search_query"];
 
     $conn = mysqli_connect("localhost", "root", "", "pdfupload");
-    $conn_lms = mysqli_connect("localhost", "root", "", "lms");
+    $conn_lms = mysqli_connect("localhost", "root", "", "pdfupload");
 
     if (!$conn || !$conn_lms) {
         die("Connection failed: " . mysqli_connect_error());
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_query"])) {
     $searchQuery = "SELECT images.*, category.cat_name, users.name AS uploaded_by_name 
                     FROM images 
                     LEFT JOIN category ON images.cat_id = category.cat_id 
-                    LEFT JOIN lms.users ON images.uploaded_by = lms.users.id 
+                    LEFT JOIN pdfupload.users ON images.uploaded_by = pdfupload.users.id 
                     WHERE images.book_name LIKE '%$searchTerm%' 
                     OR category.cat_name LIKE '%$searchTerm%' 
                     OR users.name LIKE '%$searchTerm%'";
