@@ -11,6 +11,7 @@ if (!$lms_conn) {
     die("Connection to LMS database failed: " . mysqli_connect_error());
 }
 
+//handle search query
 $search_query = "";
 $min_rating = "";
 
@@ -18,7 +19,7 @@ if (isset($_POST['search_query'])) {
     $search_query = $_POST['search_query'];
     $min_rating = isset($_POST['min_rating']) ? (int)$_POST['min_rating'] : 0;
     
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
+    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
             FROM images
             LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
             LEFT JOIN category ON images.cat_id = category.cat_id
@@ -34,7 +35,7 @@ if (isset($_POST['search_query'])) {
             ORDER BY avg_rating DESC, images.date_added DESC";
 } else if (isset($_GET['category'])) {
     $selectedCategory = urldecode($_GET['category']);
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
+    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
             FROM images
             LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
             LEFT JOIN category ON images.cat_id = category.cat_id
@@ -44,7 +45,7 @@ if (isset($_POST['search_query'])) {
             GROUP BY images.id
             ORDER BY avg_rating DESC, images.date_added DESC";
 } else {
-    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
+    $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, COALESCE(AVG(reviews.rating), 0) AS avg_rating
             FROM images
             LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
             LEFT JOIN category ON images.cat_id = category.cat_id
@@ -58,6 +59,7 @@ $result = mysqli_query($conn, $sql);
 if (!$result) {
     die("Query failed: " . mysqli_error($conn));
 }
+
 ?>
 
 <!DOCTYPE html>

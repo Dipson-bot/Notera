@@ -80,35 +80,49 @@ if (isset($_GET['book_id']) && isset($_GET['pdf'])) {
 
 
     // HandlNotera search
-$search_query = "";
-if (isset($_POST['search_query'])) {
-    $search_query = $_POST['search_query'];
-
-    $sql = "SELECT images.*, category.cat_name, subcategory.subcat_name
-            FROM images
-            LEFT JOIN category ON images.cat_id = category.cat_id
-            LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
-            WHERE images.book_name LIKE '%$search_query%'
-            OR category.cat_name LIKE '%$search_query%'
-            OR subcategory.subcat_name LIKE '%$search_query%'
-            OR images.author_name LIKE '%$search_query%'
-            ORDER BY images.date_added DESC";
-} else if (isset($_GET['category'])) {
-    // Modify the SQL query to select Books from a specific category
-    $selectedCategory = $_GET['category'];
-    $sql = "SELECT images.*, category.cat_name, subcategory.subcat_name
-            FROM images
-            LEFT JOIN category ON images.cat_id = category.cat_id
-            LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
-            WHERE images.cat_id = $selectedCategory
-            ORDER BY images.date_added DESC";
-} else {
-    $sql = "SELECT images.*, category.cat_name, subcategory.subcat_name
-            FROM images
-            LEFT JOIN category ON images.cat_id = category.cat_id
-            LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
-            ORDER BY images.date_added DESC";
-}
+    $search_query = "";
+    $min_rating = "";
+    
+    if (isset($_POST['search_query'])) {
+        $search_query = $_POST['search_query'];
+        $min_rating = isset($_POST['min_rating']) ? (int)$_POST['min_rating'] : 0;
+        
+        $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
+                FROM images
+                LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
+                LEFT JOIN category ON images.cat_id = category.cat_id
+                LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
+                LEFT JOIN reviews ON images.id = reviews.book_id
+                WHERE (images.book_name LIKE '%$search_query%'
+                OR category.cat_name LIKE '%$search_query%'
+                OR subcategory.subcat_name LIKE '%$search_query%'
+                OR images.author_name LIKE '%$search_query%'
+                OR lms_users.name LIKE '%$search_query%')
+                GROUP BY images.id
+                HAVING avg_rating >= $min_rating
+                ORDER BY avg_rating DESC, images.date_added DESC";
+    } else if (isset($_GET['category'])) {
+        $selectedCategory = urldecode($_GET['category']);
+        $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
+                FROM images
+                LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
+                LEFT JOIN category ON images.cat_id = category.cat_id
+                LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
+                LEFT JOIN reviews ON images.id = reviews.book_id
+                WHERE images.cat_id = '$selectedCategory'
+                GROUP BY images.id
+                ORDER BY avg_rating DESC, images.date_added DESC";
+    } else {
+        $sql = "SELECT images.*, lms_users.name AS uploaded_by_name, lms_users.id AS uploaded_by_id, category.cat_name, subcategory.subcat_name, AVG(reviews.rating) AS avg_rating
+                FROM images
+                LEFT JOIN lms.users AS lms_users ON images.uploaded_by = lms_users.id
+                LEFT JOIN category ON images.cat_id = category.cat_id
+                LEFT JOIN subcategory ON images.subcat_id = subcategory.subcat_id
+                LEFT JOIN reviews ON images.id = reviews.book_id
+                GROUP BY images.id
+                ORDER BY avg_rating DESC, images.date_added DESC";
+    }
+    
 
 
     $result = mysqli_query($connection, $sql);
