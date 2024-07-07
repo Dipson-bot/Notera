@@ -1,13 +1,16 @@
 <?php
 session_start();
 
-
 if (!isset($_SESSION['id'])) {
-	header("Location: ../index.php");
-	exit();
+    header("Location: ../index.php");
+    exit();
 }
-$connection = mysqli_connect("localhost", "root", "");
-$db = mysqli_select_db($connection, "pdfupload");
+
+$connection = mysqli_connect("localhost", "root", "", "pdfupload");
+
+if (!$connection) {
+    die("Database connection failed: " . mysqli_connect_error());
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['user_id'])) {
     $userId = $_POST['user_id'];
@@ -27,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['user_id'])) {
 
 $queryAdmin = "SELECT * FROM users WHERE role = 'admin'";
 $queryUser = "SELECT * FROM users WHERE role = 'user'";
+
 ?>
 
 <!DOCTYPE html>
@@ -64,12 +68,16 @@ $queryUser = "SELECT * FROM users WHERE role = 'user'";
                 </tr>
                 <?php
                 $query_run = mysqli_query($connection, $queryAdmin);
-                while ($row = mysqli_fetch_assoc($query_run)) {
-                    $name = $row['name'];
-                    $email = $row['email'];
-                    $mobile = $row['mobile'];
-                    $address = $row['address'];
-                    echo "<tr><td>$name</td><td>$email</td><td>$mobile</td><td>$address</td></tr>";
+                if (!$query_run) {
+                    echo "<tr><td colspan='4'>Failed to retrieve admins: " . mysqli_error($connection) . "</td></tr>";
+                } else {
+                    while ($row = mysqli_fetch_assoc($query_run)) {
+                        $name = $row['name'];
+                        $email = $row['email'];
+                        $mobile = $row['mobile'];
+                        $address = $row['address'];
+                        echo "<tr><td>$name</td><td>$email</td><td>$mobile</td><td>$address</td></tr>";
+                    }
                 }
                 ?>
             </table>
@@ -89,20 +97,28 @@ $queryUser = "SELECT * FROM users WHERE role = 'user'";
                 </tr>
                 <?php
                 $query_run = mysqli_query($connection, $queryUser);
-                while ($row = mysqli_fetch_assoc($query_run)) {
-                    $userId = $row['id'];
-                    $name = $row['name'];
-                    $email = $row['email'];
-                    $mobile = $row['mobile'];
-                    $address = $row['address'];
-                    echo "<tr><td>$name</td><td>$email</td><td>$mobile</td><td>$address</td>
-                          <td>
-                              <form method='post'>
-                                  <input type='hidden' name='user_id' value='$userId'>
-                                  <button type='submit' class='btn btn-primary'>Convert to Admin</button>
-                              </form>
-                          </td>
-                          </tr>";
+                if (!$query_run) {
+                    echo "<tr><td colspan='5'>Failed to retrieve users: " . mysqli_error($connection) . "</td></tr>";
+                } else {
+                    if (mysqli_num_rows($query_run) == 0) {
+                        echo "<tr><td colspan='5'>No users found.</td></tr>";
+                    } else {
+                        while ($row = mysqli_fetch_assoc($query_run)) {
+                            $userId = $row['id'];
+                            $name = $row['name'];
+                            $email = $row['email'];
+                            $mobile = $row['mobile'];
+                            $address = $row['address'];
+                            echo "<tr><td>$name</td><td>$email</td><td>$mobile</td><td>$address</td>
+                                  <td>
+                                      <form method='post'>
+                                          <input type='hidden' name='user_id' value='$userId'>
+                                          <button type='submit' class='btn btn-primary'>Convert to Admin</button>
+                                      </form>
+                                  </td>
+                                  </tr>";
+                        }
+                    }
                 }
                 ?>
             </table>

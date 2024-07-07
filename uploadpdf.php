@@ -209,6 +209,11 @@ if (!$result) {
                     });
             }
         });
+
+        // Show the copyright modal on page load
+        $(document).ready(function() {
+            $('#copyrightModal').modal('show');
+        });
     </script>
 
     <!-- Include Bootstrap JavaScript -->
