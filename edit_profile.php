@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $newName = $_POST['new_name'];
     $newMobile = $_POST['new_mobile'];
     $newAddress = $_POST['new_address'];
+    $removeProfilePicture = isset($_POST['remove_profile_picture']) ? true : false;
 
     // Validate inputs
     $errors = [];
@@ -32,8 +33,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo '<script type="text/javascript">alert("' . $error . '");</script>';
         }
     } else {
-        // Handle profile picture upload
-        if ($_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        // Handle profile picture upload or removal
+        if ($removeProfilePicture) {
+            $uploadPath = 'uploads/path_to_default_image.jpg';
+        } elseif ($_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
             $fileTmpPath = $_FILES['profile_picture']['tmp_name'];
             $fileName = $_FILES['profile_picture']['name'];
             $fileSize = $_FILES['profile_picture']['size'];
@@ -50,26 +53,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Move the uploaded file to the specified directory
                 if (move_uploaded_file($fileTmpPath, $uploadPath)) {
-                    // Update profile picture path in database using prepared statement
-                    $updateQuery = "UPDATE users SET name = ?, mobile = ?, address = ?, profile_picture = ? WHERE email = ?";
-
-                    $stmt = mysqli_prepare($connection, $updateQuery);
-                    if ($stmt === false) {
-                        die('MySQL prepare error: ' . mysqli_error($connection));
-                    }
-
-                    mysqli_stmt_bind_param($stmt, 'sssss', $newName, $newMobile, $newAddress, $uploadPath, $_SESSION['email']);
-                    if (mysqli_stmt_execute($stmt)) {
-                        echo '<script type="text/javascript">alert("Changes have been successfully saved."); window.location.href = "view_profile.php";</script>';
-                        exit();
-                    } else {
-                        echo "Error updating record: " . mysqli_stmt_error($stmt);
-                    }
+                    // File upload success
                 } else {
                     echo '<script type="text/javascript">alert("There was an error uploading your file. Please try again.");</script>';
+                    $uploadPath = null;
                 }
             } else {
                 echo '<script type="text/javascript">alert("Invalid file type. Only JPG, JPEG, PNG, and GIF files are allowed.");</script>';
+                $uploadPath = null;
+            }
+        }
+
+        if (isset($uploadPath)) {
+            // Update profile picture path in database using prepared statement
+            $updateQuery = "UPDATE users SET name = ?, mobile = ?, address = ?, profile_picture = ? WHERE email = ?";
+
+            $stmt = mysqli_prepare($connection, $updateQuery);
+            if ($stmt === false) {
+                die('MySQL prepare error: ' . mysqli_error($connection));
+            }
+
+            mysqli_stmt_bind_param($stmt, 'sssss', $newName, $newMobile, $newAddress, $uploadPath, $_SESSION['email']);
+            if (mysqli_stmt_execute($stmt)) {
+                echo '<script type="text/javascript">alert("Changes have been successfully saved."); window.location.href = "view_profile.php";</script>';
+                exit();
+            } else {
+                echo "Error updating record: " . mysqli_stmt_error($stmt);
             }
         } else {
             // Update profile information without uploading a new picture
@@ -153,6 +162,12 @@ if ($row = mysqli_fetch_assoc($result)) {
                     <div class="mb-3">
                         <label for="profile_picture" class="form-label">Profile Picture</label>
                         <input type="file" class="form-control mt-3" name="profile_picture" id="profile_picture">
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="remove_profile_picture" id="remove_profile_picture">
+                        <label class="form-check-label" for="remove_profile_picture">
+                            Remove Profile Picture
+                        </label>
                     </div>
                     <div class="mb-3">
                         <label for="new_name" class="form-label">Name</label>
